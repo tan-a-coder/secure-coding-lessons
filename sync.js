@@ -41,11 +41,13 @@
       return r.json();
     }).catch(function (e) {
       clearTimeout(t);
-      // The Apps Script endpoint answers in 2-8s and intermittently returns
-      // errors under load. Retry only when re-sending cannot double-count:
-      // reads always, writes only when the caller pushes cumulative state.
+      // The Apps Script endpoint answers in 1.5-8s and intermittently 404s, returns an
+      // empty body, or drops the connection. Retry only when re-sending cannot
+      // double-count: reads always, writes only when the caller pushes cumulative state.
       if (retriesLeft > 0) {
-        return new Promise(function (res) { setTimeout(res, 600 * (3 - retriesLeft)); })
+        var waits = [800, 2500, 7000];            // ride out a bad minute
+        var wait = waits[Math.min(3 - retriesLeft, waits.length - 1)];
+        return new Promise(function (res) { setTimeout(res, wait); })
           .then(function () { return timed(url, opts, retriesLeft - 1); });
       }
       throw e;
@@ -54,7 +56,7 @@
 
   function board() {
     if (!ENDPOINT) return Promise.reject(new Error("no endpoint configured"));
-    return timed(ENDPOINT + "?action=board", { cache: "no-store" }, 2);
+    return timed(ENDPOINT + "?action=board", { cache: "no-store" }, 3);
   }
 
   function post(action, obj) {
@@ -63,7 +65,7 @@
       method: "POST",
       headers: { "Content-Type": "text/plain" }, // simple request — no preflight
       body: JSON.stringify(obj)
-    }, (obj && obj.stats) ? 2 : 0);
+    }, (obj && obj.stats) ? 3 : 0);
   }
 
   // Read-modify-write against the board's team doc (the merge base for
