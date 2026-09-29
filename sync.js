@@ -2,7 +2,7 @@
   "use strict";
   var CFG = window.PACE_CONFIG || { pastebox: { endpoint: "" } };
   var ENDPOINT = (CFG.pastebox && CFG.pastebox.endpoint || "").replace(/\/+$/, "");
-  var TIMEOUT = (CFG.pastebox && CFG.pastebox.timeoutMs) || 10000;
+  var TIMEOUT = (CFG.pastebox && CFG.pastebox.timeoutMs) || 15000;
   var HEARTBEAT_MS = CFG.heartbeatMs || 30000;
 
   var LS_KEY = "secops_game_profile";
@@ -30,7 +30,7 @@
 
   function teamKey() { return slug(getProfile().teamName); }
 
-  function timed(url, opts) {
+  function timed(url, opts, retriesLeft) {
     var ctrl = new AbortController();
     var t = setTimeout(function () { ctrl.abort(); }, TIMEOUT);
     opts = opts || {};
@@ -39,12 +39,22 @@
       clearTimeout(t);
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
-    }).catch(function (e) { clearTimeout(t); throw e; });
+    }).catch(function (e) {
+      clearTimeout(t);
+      // The Apps Script endpoint answers in 2-8s and intermittently returns
+      // errors under load. Retry only when re-sending cannot double-count:
+      // reads always, writes only when the caller pushes cumulative state.
+      if (retriesLeft > 0) {
+        return new Promise(function (res) { setTimeout(res, 600 * (3 - retriesLeft)); })
+          .then(function () { return timed(url, opts, retriesLeft - 1); });
+      }
+      throw e;
+    });
   }
 
   function board() {
     if (!ENDPOINT) return Promise.reject(new Error("no endpoint configured"));
-    return timed(ENDPOINT + "?action=board", { cache: "no-store" });
+    return timed(ENDPOINT + "?action=board", { cache: "no-store" }, 2);
   }
 
   function post(action, obj) {
@@ -53,7 +63,7 @@
       method: "POST",
       headers: { "Content-Type": "text/plain" }, // simple request — no preflight
       body: JSON.stringify(obj)
-    });
+    }, (obj && obj.stats) ? 2 : 0);
   }
 
   // Read-modify-write against the board's team doc (the merge base for
