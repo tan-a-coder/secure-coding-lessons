@@ -56,9 +56,19 @@
     });
   }
 
-  // Read-modify-write. patch = {scoreDelta, solved?, accuracy?, game?}
-  // The board's current team doc is the merge base (multi-device teams).
-  function reportTeam(patch) {
+  // Read-modify-write against the board's team doc (the merge base for
+  // multi-device teams). patch = {scoreDelta, solved?, accuracy?, game?}
+  // plus, from games that track their own totals:
+  //   stats     = {score, correct, attempts}  absolute for THIS device
+  //   solvedAll = {lessonId: true, ...}       every lesson this device has solved
+  //
+  // Two pushes in flight at once would both read the same base and the later
+  // POST would wipe the earlier one — silent score loss under rapid play. So
+  // every merge runs through one chain, and callers that push absolutes make a
+  // lost push self-heal on the next one.
+  var chain = Promise.resolve();
+
+  function mergeTeam(patch) {
     var profile = getProfile();
     var key = teamKey();
     var now = Date.now();
@@ -68,24 +78,33 @@
       var deviceId = profile.deviceId;
       var players = cur.players || {};
       var p = players[deviceId] || { player: profile.playerName || "anonymous", score: 0, correct: 0, attempts: 0, solved: {}, lastActionTs: 0 };
+      var prevScore = p.score || 0;
       p.player = profile.playerName || "anonymous";
-      p.score = (p.score || 0) + delta;
-      if (delta > 0) p.correct = (p.correct || 0) + 1;
-      p.attempts = (p.attempts || 0) + 1;
-      if (patch.solved) p.solved = Object.assign({}, p.solved, patch.solved);
+      if (patch.stats) {
+        p.score = patch.stats.score || 0;
+        p.correct = patch.stats.correct || 0;
+        p.attempts = patch.stats.attempts || 0;
+      } else {
+        p.score = prevScore + delta;
+        if (delta > 0) p.correct = (p.correct || 0) + 1;
+        p.attempts = (p.attempts || 0) + 1;
+      }
+      var added = patch.solvedAll || patch.solved;
+      if (added) p.solved = Object.assign({}, p.solved, added);
       p.lastActionTs = now;
       players[deviceId] = p;
+      var step = p.score - prevScore;              // what THIS device just contributed
       var doc = {
         teamKey: key,
         team: profile.teamName,
         player: profile.playerName || "anonymous",
         game: patch.game || "game",
         session: (CFG.pastebox && CFG.pastebox.session) || "?",
-        score: (cur.score || 0) + delta,
+        score: Math.max(0, (cur.score || 0) + step),
         accuracy: patch.accuracy !== undefined ? patch.accuracy : (cur.accuracy || 0),
         lastActionTs: now,
-        solved: Object.assign({}, cur.solved || {}, patch.solved || {}),
-        history: (cur.history || []).concat(delta ? [{ ts: now, delta: delta }] : []).slice(-200),
+        solved: Object.assign({}, cur.solved || {}, added || {}),
+        history: (cur.history || []).concat(step ? [{ ts: now, delta: step }] : []).slice(-200),
         updatedBy: profile.deviceId,
         heartbeatTs: now,
         players: players
@@ -93,6 +112,13 @@
       if (patch.score !== undefined) doc.score = patch.score;
       return post("upsert", doc).then(function () { return doc; });
     });
+  }
+
+  function reportTeam(patch) {
+    var run = chain.then(function () { return mergeTeam(patch); },
+                         function () { return mergeTeam(patch); });
+    chain = run.catch(function () { /* a failed push must not break the chain */ });
+    return run;
   }
 
   function heartbeat() {

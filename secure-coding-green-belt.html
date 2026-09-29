@@ -152,6 +152,12 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
 .footer b { color: var(--cyan); }
 
 
+/* archetype: CWE explanation note, rendered directly under the vulnerable code */
+.noteBox { margin-top: 2px; padding: 12px 14px; border-left: 3px solid #38e1ff;
+  background: #0e1720; border-radius: 8px; }
+.noteBox .noteHead { font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: #38e1ff; margin-bottom: 6px; }
+.noteBox .noteText { font-size: 13px; line-height: 1.55; color: #a9bccd; margin: 0; }
 </style>
 </head>
 <body>
@@ -187,6 +193,13 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
       <div class="card">
         <div class="sectionTitle" id="codeTitle">Vulnerable code</div>
         <div class="codebox"><pre id="vulnCode">—</pre></div>
+      </div>
+
+      <div class="card" id="noteCard">
+        <div class="noteBox">
+          <div class="noteHead" id="noteHead">—</div>
+          <p class="noteText" id="noteText">—</p>
+        </div>
       </div>
     </div>
 
@@ -261,6 +274,7 @@ const GAME_DATA = {
     "why": "Allow-list what the input may be (digits and operators), and use a parser built for that grammar. Anything that evaluates external text as a program is out of bounds.",
     "code": "// no eval: parse and compute\nExpr e = Parser.parse(input, ALLOWED_NUMERIC_GRAMMAR);\ndouble result = e.evaluate();               // cannot execute code\n"
    },
+   "note": "Code injection happens when input is treated as code. The interpreter cannot separate data from instructions, so whatever the user sends becomes behaviour the application executes.",
    "ref": "CWE-94 · OWASP Top 10:2025 A05 Injection"
   },
   {
@@ -292,6 +306,7 @@ const GAME_DATA = {
     "why": "Decide the maximum, store it in a type that can hold it, and check before every increment. Detection in the SIEM is a second layer, never the control.",
     "code": "int tries = (int) session.getAttribute(\"tries\");\nif (tries >= MAX_ATTEMPTS) { lockAccount(); }\nelse { session.setAttribute(\"tries\", tries + 1); }\n"
    },
+   "note": "Fixed-width integers wrap at their maximum. A counter that overflows silently turns small or negative, so the limit it was meant to enforce stops applying.",
    "ref": "CWE-190 · integer wraparound defeating a lockout"
   },
   {
@@ -323,6 +338,7 @@ const GAME_DATA = {
     "why": "The user gets \"something went wrong\" plus an id; the operator gets the stack trace in the log. Nothing about the internals crosses the boundary.",
     "code": "catch (SQLException e) {\n  String ref = Log.error(\"query failed\", e);     // full detail server-side\n  res.getWriter().println(\"Something went wrong. Reference: \" + ref);\n}\n"
    },
+   "note": "Error messages are an information leak. Stack traces, query fragments and internal paths tell an attacker how the system is built and where to aim next.",
    "ref": "CWE-209 · OWASP Top 10:2025 A02 Security Misconfiguration"
   },
   {
@@ -354,6 +370,7 @@ const GAME_DATA = {
     "why": "Every protected endpoint checks identity before doing work. New endpoints inherit the check instead of having to remember it.",
     "code": "protected void doGet(HttpServletRequest req, HttpServletResponse res) {\n  if (!Auth.isAuthenticated(req.getSession())) { res.sendError(401); return; }\n  res.getWriter().println(Reporting.buildReport());\n}\n"
    },
+   "note": "Missing authentication means the function does the work without ever establishing who is asking. If the endpoint is reachable, it is usable.",
    "ref": "CWE-306 · OWASP Top 10:2025 A01 Broken Access Control"
   },
   {
@@ -385,6 +402,7 @@ const GAME_DATA = {
     "why": "Length-based policy, a check against breach corpora, per-account and per-source throttling, and a lockout that a human can clear.",
     "code": "if (Failures.for(user).count() >= MAX || RateLimiter.blocked(ip)) { delayAndRefuse(); }\nif (!Policy.allows(password)) { rejectWithGuidance(); }\n"
    },
+   "note": "Without a limit on attempts, a password space becomes a brute-force problem: the attacker trades time for access, and time is cheap.",
    "ref": "CWE-307 · OWASP Top 10:2025 A07 Authentication Failures"
   },
   {
@@ -416,6 +434,7 @@ const GAME_DATA = {
     "why": "Passwords get a KDF with salt and cost. Encryption is for data you must read back, and its keys live in a key store, never in the code.",
     "code": "String hash = BCrypt.hashpw(password, BCrypt.gensalt(12));\nuser.setPassword(hash);\n"
    },
+   "note": "Encoding is not protection. Any reversible transformation, base64 included, can be turned back into the original value by whoever obtains the data.",
    "ref": "CWE-311 · OWASP Top 10:2025 A04 Cryptographic Failures"
   },
   {
@@ -447,6 +466,7 @@ const GAME_DATA = {
     "why": "Pick what the field currently considers strong, use a vetted implementation, and never write a custom algorithm. For passwords that means a salted KDF with a work factor you can raise.",
     "code": "String hash = Argon2.hash(password, salt = random(16), cost = 65536);\n"
    },
+   "note": "A broken or risky algorithm fails the property its purpose requires. MD5 and SHA-1 are fast to compute and collision-prone, so they cannot protect passwords.",
    "ref": "CWE-327 · OWASP Top 10:2025 A04 Cryptographic Failures"
   },
   {
@@ -478,6 +498,7 @@ const GAME_DATA = {
     "why": "Sign artefacts and verify against a trusted key; refuse anything that does not verify. Apply it to updates, plugins, models and configuration alike.",
     "code": "byte[] plugin = httpGet(UPDATE_URL + \"/plugin.jar\");\nif (!Signature.verify(plugin, TRUSTED_PUBLIC_KEY)) throw new SecurityException(\"bad signature\");\nFiles.write(installPath, plugin);\n"
    },
+   "note": "Code trusted because of where it came from has not been verified. Without an integrity check, a compromised or spoofed source delivers whatever it likes.",
    "ref": "CWE-494 · OWASP Top 10:2025 A08 Software or Data Integrity Failures"
   },
   {
@@ -509,6 +530,7 @@ const GAME_DATA = {
     "why": "Salt per user, store the salt beside the hash, and choose a KDF whose cost you can raise as hardware improves.",
     "code": "byte[] salt = Crypto.randomBytes(16);\nString hash = PBKDF2.hash(password, salt, iterations = 210000);\nuser.setPassword(hash, salt);\n"
    },
+   "note": "An unsalted hash is deterministic: the same password always produces the same digest. That enables precomputed tables and reveals shared passwords across users.",
    "ref": "CWE-759 · OWASP Top 10:2025 A04 Cryptographic Failures"
   },
   {
@@ -540,6 +562,7 @@ const GAME_DATA = {
     "why": "Secrets come from outside the artefact (secret manager, instance role, injected environment), are scoped to the minimum privilege, and are rotated on exposure.",
     "code": "String pw = SecretStore.get(\"svc_app/db\");     // resolved at run time, never in source\nConnection c = DriverManager.getConnection(DB_URL, \"svc_app\", pw);\n"
    },
+   "note": "A credential shipped with the code is in the hands of anyone who obtains the code. It cannot be rotated without a redeploy, and there is no lever to revoke it.",
    "ref": "CWE-798 · OWASP Top 10:2025 A05 Injection-adjacent config risk"
   },
   {
@@ -571,6 +594,7 @@ const GAME_DATA = {
     "why": "Client-side checks are for user experience. Every security-relevant test — authorization, price, limits, role — is re-derived server-side from trusted state.",
     "code": "boolean isAdmin = Auth.roles(req.getSession()).contains(\"ADMIN\");   // server-side truth\nif (isAdmin) { showAdminPanel(); }\n"
    },
+   "note": "The security decision is made from data the attacker controls. If the client supplies the input to an authorisation check, the client effectively makes the decision.",
    "ref": "CWE-807 · OWASP Top 10:2025 A01 Broken Access Control"
   },
   {
@@ -602,6 +626,7 @@ const GAME_DATA = {
     "why": "Every privileged action checks the caller's entitlement and denies by default; roles are granted narrowly and reviewed. Discovery is irrelevant when the door is locked.",
     "code": "if (!Authz.allowed(session, \"admin.panel.view\")) { res.sendError(403); return; }\nshowAdminPanel();\n"
    },
+   "note": "Authorisation enforced by obscurity is not enforced: a link that is hidden is not a request that is checked. Anything reachable by guessing a URL is unprotected.",
    "ref": "CWE-862 · OWASP Top 10:2025 A01 Broken Access Control"
   }
  ]
@@ -631,17 +656,23 @@ const GAME_DATA = {
     el.title = "sync: " + state;
   }
 
-  function push(scoreDelta, solvedId, accuracy) {
+  function push(scoreDelta, solvedId, accuracy, extra) {
     if (!sync || !sync.ready) { setStatus("off"); return; }
     var solved;
     if (solvedId) { solved = {}; solved[solvedId] = true; }
     var title = (typeof GAME_DATA !== "undefined" && GAME_DATA && GAME_DATA.title) || "game";
-    sync.reportTeam({
+    var patch = {
       scoreDelta: scoreDelta || 0,
       solved: solved,
       accuracy: accuracy,
       game: title
-    }).then(function () { setStatus("ok"); }).catch(function () { setStatus("fail"); });
+    };
+    // games that track their own totals push absolutes, so a lost push self-heals
+    if (extra) {
+      if (extra.stats) patch.stats = extra.stats;
+      if (extra.solvedAll) patch.solvedAll = extra.solvedAll;
+    }
+    sync.reportTeam(patch).then(function () { setStatus("ok"); }).catch(function () { setStatus("fail"); });
   }
 
   function refreshTeam() {
@@ -753,6 +784,10 @@ function renderLesson() {
   $("lessonBody").innerHTML = l.body || "";
   $("codeTitle").textContent = l.codeTitle || "Vulnerable code";
   $("vulnCode").textContent = (l.vulnerable || "").replace(/\s+$/, "");
+  const note = l.note || "";
+  $("noteHead").textContent = (l.code || "CWE") + " — what this weakness class means";
+  $("noteText").textContent = note;
+  $("noteCard").style.display = note ? "" : "none";
   $("questionLabel").textContent = l.question || "Which change removes the flaw?";
 
   const box = $("actions");
@@ -875,13 +910,21 @@ function restartGame() {
   renderLesson();
 }
 
-/* sync: push on every answer (points + lesson id + accuracy = first-try rate) */
+/* sync: push on every answer (points + lesson id + accuracy = first-try rate)
+   Cumulative, not delta-only: the absolute device totals and the full solved map
+   go with every push, so a push lost to a race or a slow network is repaired by
+   the next one. See the serialization note in sync.js. */
 function sync_push(points) {
   if (!(window.PACE && window.PACE.gameSync)) return;
   const attempted = Math.max(1, attemptedCount());
   const accuracy = firstTryCount() / attempted;
+  const solvedAll = {};
+  Object.keys(state.picked || {}).forEach(function (k) { solvedAll[k] = true; });
   try {
-    window.PACE.gameSync.push(points, currentLesson().id, accuracy);
+    window.PACE.gameSync.push(points, currentLesson().id, accuracy, {
+      stats: { score: state.score, correct: firstTryCount(), attempts: attemptedCount() },
+      solvedAll: solvedAll
+    });
   } catch (e) { /* sync must never break play */ }
 }
 
