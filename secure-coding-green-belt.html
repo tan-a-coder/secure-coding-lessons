@@ -669,7 +669,7 @@ const GAME_DATA = {
     d.className = "stat";
     d.id = "teamStat";
     d.innerHTML = '<div class="label">Team</div>' +
-      '<div class="value" id="teamName" style="font-size:12px">' + esc(teamName()) +
+      '<div class="value" style="font-size:12px"><span id="teamName">' + esc(teamName()) + '</span>' +
       ' <span id="syncDot" style="font-size:11px" title="sync: off">·</span></div>' +
       '<div style="font-size:10px;color:#7d8ea3;text-align:center" id="teamPlayer">' + esc(playerName()) + "</div>";
     sb.appendChild(d);
