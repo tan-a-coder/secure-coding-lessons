@@ -870,14 +870,14 @@ function pick(i) {
     fb.innerHTML = "<b>✅ " + (firstTry ? "First try." : "Solved.") + "</b> " + esc(o.why || "");
     revealDefence(l);
     $("nextBtn").style.display = "inline-block";
-    sync_push(points);
+    sync_push(points, l.id);
     if (solvedCount() === totalLessons()) showFinish();
   } else {
     document.getElementById("act" + i).disabled = true;
     const fb = $("feedback");
     fb.className = "feedback bad";
     fb.innerHTML = "<b>❌ Not this one.</b> " + esc(o.why || "") + " Try again.";
-    sync_push(0);
+    sync_push(0, null);          // a miss solves nothing — never claim the lesson
   }
   renderHeader();
   renderChips();
@@ -914,14 +914,16 @@ function restartGame() {
    Cumulative, not delta-only: the absolute device totals and the full solved map
    go with every push, so a push lost to a race or a slow network is repaired by
    the next one. See the serialization note in sync.js. */
-function sync_push(points) {
+function sync_push(points, solvedId) {
   if (!(window.PACE && window.PACE.gameSync)) return;
   const attempted = Math.max(1, attemptedCount());
   const accuracy = firstTryCount() / attempted;
   const solvedAll = {};
   Object.keys(state.picked || {}).forEach(function (k) { solvedAll[k] = true; });
   try {
-    window.PACE.gameSync.push(points, currentLesson().id, accuracy, {
+    // solvedId is null on a miss: the board must not record a lesson the player did not solve.
+    // solvedAll carries every lesson actually solved, so the board self-heals either way.
+    window.PACE.gameSync.push(points, solvedId, accuracy, {
       stats: { score: state.score, correct: firstTryCount(), attempts: attemptedCount() },
       solvedAll: solvedAll
     });
