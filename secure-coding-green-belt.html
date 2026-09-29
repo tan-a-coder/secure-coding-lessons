@@ -671,6 +671,7 @@ const GAME_DATA = {
     if (extra) {
       if (extra.stats) patch.stats = extra.stats;
       if (extra.solvedAll) patch.solvedAll = extra.solvedAll;
+      if (extra.missedAll) patch.missedAll = extra.missedAll;
     }
     sync.reportTeam(patch).then(function () { setStatus("ok"); }).catch(function () { setStatus("fail"); });
   }
@@ -920,12 +921,19 @@ function sync_push(points, solvedId) {
   const accuracy = firstTryCount() / attempted;
   const solvedAll = {};
   Object.keys(state.picked || {}).forEach(function (k) { solvedAll[k] = true; });
+  // A lesson counts as MISSED when the first pick was wrong (or it was abandoned) — this is
+  // the instructor's debrief signal, so it is distinct from "not solved yet".
+  const missedAll = {};
+  Object.keys(state.tried || {}).forEach(function (k) {
+    if ((state.tried[k] || [])[0] !== state.picked[k]) missedAll[k] = true;
+  });
   try {
     // solvedId is null on a miss: the board must not record a lesson the player did not solve.
     // solvedAll carries every lesson actually solved, so the board self-heals either way.
     window.PACE.gameSync.push(points, solvedId, accuracy, {
       stats: { score: state.score, correct: firstTryCount(), attempts: attemptedCount() },
-      solvedAll: solvedAll
+      solvedAll: solvedAll,
+      missedAll: missedAll
     });
   } catch (e) { /* sync must never break play */ }
 }

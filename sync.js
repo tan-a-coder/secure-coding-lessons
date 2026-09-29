@@ -96,7 +96,7 @@
       var cur = (all && all[key]) || {};
       var deviceId = profile.deviceId;
       var players = cur.players || {};
-      var p = players[deviceId] || { player: profile.playerName || "anonymous", score: 0, correct: 0, attempts: 0, solved: {}, lastActionTs: 0 };
+      var p = players[deviceId] || { player: profile.playerName || "anonymous", score: 0, correct: 0, attempts: 0, solved: {}, missed: {}, lastActionTs: 0 };
       var prevScore = p.score || 0;
       p.player = profile.playerName || "anonymous";
       if (patch.stats) {
@@ -110,6 +110,8 @@
       }
       var added = patch.solvedAll || patch.solved;
       if (added) p.solved = Object.assign({}, p.solved, added);
+      var addedMissed = patch.missedAll || patch.missed;
+      if (addedMissed) p.missed = Object.assign({}, p.missed, addedMissed);
       p.lastActionTs = now;
       players[deviceId] = p;
       var step = p.score - prevScore;              // what THIS device just contributed
@@ -123,6 +125,7 @@
         accuracy: patch.accuracy !== undefined ? patch.accuracy : (cur.accuracy || 0),
         lastActionTs: now,
         solved: Object.assign({}, cur.solved || {}, added || {}),
+        missed: Object.assign({}, cur.missed || {}, addedMissed || {}),
         history: (cur.history || []).concat(step ? [{ ts: now, delta: step }] : []).slice(-200),
         updatedBy: profile.deviceId,
         heartbeatTs: now,
