@@ -77,6 +77,13 @@
   // every merge runs through one chain, and callers that push absolutes make a
   // lost push self-heal on the next one.
   var chain = Promise.resolve();
+  var pending = null;                            // newest cumulative patch
+
+  function enqueue(fn) {
+    var run = chain.then(fn, fn);
+    chain = run.catch(function () { /* a failed push must not break the chain */ });
+    return run;
+  }
 
   function mergeTeam(patch) {
     var profile = getProfile();
@@ -125,10 +132,19 @@
   }
 
   function reportTeam(patch) {
-    var run = chain.then(function () { return mergeTeam(patch); },
-                         function () { return mergeTeam(patch); });
-    chain = run.catch(function () { /* a failed push must not break the chain */ });
-    return run;
+    if (patch && patch.stats) {
+      // Cumulative callers send their WHOLE state, so while a push is in flight a
+      // newer one makes the older redundant — coalesce rather than queue a backlog.
+      // This is what keeps a slow endpoint (2–8s per call) from falling behind play.
+      pending = patch;
+      return enqueue(function () {
+        if (!pending) return Promise.resolve(null);
+        var p = pending;
+        pending = null;
+        return mergeTeam(p);
+      });
+    }
+    return enqueue(function () { return mergeTeam(patch); });
   }
 
   function heartbeat() {
