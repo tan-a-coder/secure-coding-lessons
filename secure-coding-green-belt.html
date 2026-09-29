@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Coding Green Belt</title>
+<style>
+:root {
+  --bg: #0b0f14;
+  --panel: #111822;
+  --panel2: #0e141d;
+  --border: #1e2a3a;
+  --text: #d7e2ee;
+  --dim: #7d8ea3;
+  --cyan: #38e1ff;
+  --green: #3ddc84;
+  --amber: #ffb454;
+  --red: #ff5c6c;
+  --purple: #a78bfa;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+}
+.wrap { max-width: 980px; margin: 0 auto; }
+
+/* header */
+.hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.game-title {
+  font-size: 1.9rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.subtitle { color: var(--dim); font-size: .85rem; margin-top: 6px; letter-spacing: .04em; }
+.scoreBar { display: flex; gap: 18px; align-items: center; }
+.stat { text-align: right; }
+.stat .label { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); }
+.stat .value { font-family: var(--mono); font-size: 1.35rem; font-weight: 700; }
+.stat .value.green { color: var(--green); }
+.progressWrap { width: 220px; }
+.progressBar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.progressBar > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width .4s ease; }
+#progressText { font-size: .72rem; color: var(--dim); margin-top: 6px; font-family: var(--mono); }
+
+/* tabs */
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.tab {
+  padding: 9px 22px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--panel2); color: var(--dim); font-weight: 600; cursor: pointer;
+  font-size: .85rem; letter-spacing: .06em; text-transform: uppercase;
+}
+.tab.active { background: rgba(56,225,255,.12); border-color: var(--cyan); color: var(--cyan); }
+
+/* layout */
+.layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.card + .card { margin-top: 16px; }
+
+.sectionTitle { font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; color: var(--dim); margin-bottom: 12px; }
+
+.roundBadge { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .08em; padding: 3px 10px; border-radius: 99px; margin-bottom: 8px; }
+.threat-CRITICAL { background: rgba(255,92,108,.15); color: var(--red); }
+.threat-HIGH { background: rgba(255,180,84,.15); color: var(--amber); }
+.threat-MEDIUM { background: rgba(56,225,255,.12); color: var(--cyan); }
+.threat-LOW { background: rgba(61,220,132,.12); color: var(--green); }
+
+h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
+.scenario { font-size: .92rem; line-height: 1.55; color: #b9c8d8; }
+.scenario code, .codebox code { font-family: var(--mono); background: rgba(56,225,255,.08); color: var(--cyan); padding: 1px 5px; border-radius: 4px; font-size: .88em; }
+.scenario b { color: var(--text); }
+
+.codebox {
+  font-family: var(--mono); font-size: .85rem; background: #0a0f16; border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; color: var(--text); white-space: pre-wrap; word-break: break-all;
+  line-height: 1.6; min-height: 44px;
+}
+.codebox .slot { color: var(--amber); font-weight: 700; }
+.codebox .pipe { color: var(--purple); }
+.codebox.ok { border-color: var(--green); color: var(--green); }
+.codebox.bad { border-color: var(--red); }
+
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: .75rem; color: var(--dim); margin-bottom: 5px; }
+.field input {
+  width: 100%; background: #0a0f16; border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: var(--mono); font-size: .9rem; padding: 10px 12px; outline: none;
+}
+.field input:focus { border-color: var(--cyan); }
+
+.btnRow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.btn {
+  padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer;
+  font-weight: 700; font-size: .83rem; letter-spacing: .04em; background: var(--panel2); color: var(--text);
+  transition: all .15s ease;
+}
+.btn:hover { border-color: var(--cyan); }
+.btn.primary { background: var(--cyan); color: #04121a; border-color: var(--cyan); }
+.btn.primary:hover { filter: brightness(1.1); }
+.btn.ghost { color: var(--dim); }
+.btn.warn { color: var(--amber); border-color: rgba(255,180,84,.4); }
+.btn.bad { color: var(--red); border-color: rgba(255,92,108,.4); }
+
+/* multiple-choice actions */
+.actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.action {
+  text-align: left; background: var(--panel2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; cursor: pointer; transition: border-color .15s ease; color: var(--text);
+  font-family: inherit; font-size: .9rem;
+}
+.action:hover:not(:disabled) { border-color: var(--cyan); }
+.action .act-title { font-weight: 700; font-size: .93rem; }
+.action .act-desc { color: var(--dim); font-size: .8rem; margin-top: 4px; line-height: 1.45; }
+.action.correct { border-color: var(--green); background: rgba(61,220,132,.08); }
+.action.wrong { border-color: var(--red); background: rgba(255,92,108,.08); }
+.action:disabled { cursor: default; }
+
+.feedback { margin-top: 14px; border-radius: 10px; padding: 14px; font-size: .88rem; line-height: 1.55; display: none; border: 1px solid; }
+.feedback.ok { display: block; background: rgba(61,220,132,.08); border-color: var(--green); color: #b9eccd; }
+.feedback.bad { display: block; background: rgba(255,92,108,.08); border-color: var(--red); color: #f3c2c8; }
+.feedback .expected { margin-top: 8px; font-family: var(--mono); font-size: .8rem; background: rgba(0,0,0,.35); padding: 8px 10px; border-radius: 6px; }
+.feedback .ref { margin-top: 8px; font-size: .78rem; color: var(--dim); }
+
+/* round chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.chip {
+  font-family: var(--mono); font-size: .72rem; padding: 5px 12px; border-radius: 99px;
+  border: 1px solid var(--border); color: var(--dim); cursor: pointer; background: var(--panel2);
+}
+.chip:hover { border-color: var(--cyan); }
+.chip.current { border-color: var(--cyan); color: var(--cyan); }
+.chip.done { border-color: var(--green); color: var(--green); background: rgba(61,220,132,.08); }
+.chip.tab-label { cursor: default; color: var(--dim); border: none; font-family: inherit; letter-spacing: .1em; text-transform: uppercase; font-size: .68rem; padding: 6px 4px; }
+.chip.tab-label.module { color: var(--purple); }
+
+/* completion overlay */
+.overlay {
+  position: fixed; inset: 0; background: rgba(4,8,12,.92); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+}
+.overlay.show { display: flex; }
+.finish-card { max-width: 460px; text-align: center; }
+.finish-card .big { font-size: 3rem; margin-bottom: 10px; }
+.finish-card h2 { font-size: 1.6rem; margin-bottom: 8px; color: var(--cyan); letter-spacing: .06em; }
+.finish-card p { color: var(--dim); line-height: 1.6; margin-bottom: 18px; }
+.footer { margin-top: 26px; text-align: center; color: var(--dim); font-size: .75rem; letter-spacing: .08em; }
+.footer b { color: var(--cyan); }
+
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <div class="game-title">Secure Coding Green Belt</div>
+      <div class="subtitle">12 flaw → defence pairs · CWE-based · PACE M4 secure coding (SN46/SN47)</div>
+    </div>
+    <div class="scoreBar">
+      <div class="stat">
+        <div class="label">Score</div>
+        <div class="value green" id="scoreNum">0</div>
+      </div>
+      <div class="progressWrap">
+        <div class="progressBar"><div id="progressBar"></div></div>
+        <div id="progressText">0 / 0 lessons solved</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- left: the flaw -->
+    <div>
+      <div class="card">
+        <div class="sectionTitle" id="lessonCount">Lesson</div>
+        <span class="roundBadge" id="codeBadge">CWE</span>
+        <h2 class="roundTitle" id="lessonTitle">—</h2>
+        <div class="scenario" id="lessonBody">—</div>
+      </div>
+
+      <div class="card">
+        <div class="sectionTitle" id="codeTitle">Vulnerable code</div>
+        <div class="codebox"><pre id="vulnCode">—</pre></div>
+      </div>
+    </div>
+
+    <!-- right: the fix -->
+    <div>
+      <div class="card">
+        <div class="sectionTitle" id="questionLabel">Your call</div>
+        <div class="actions" id="actions"></div>
+        <div class="btnRow">
+          <button class="btn primary" id="nextBtn" style="display:none">Next lesson →</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="card" id="defenceCard" style="display:none">
+        <div class="sectionTitle">The defence</div>
+        <div class="act-title" id="defenceName">—</div>
+        <p class="act-desc" id="defenceWhy">—</p>
+        <div class="codebox"><pre id="defenceCode">—</pre></div>
+      </div>
+
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <div class="footer">GREEN BELT · 12 lessons · adapted from OWASP SecureCodingDojo (Apache-2.0); code excerpts rewritten and defence pairings chosen for this pack</div>
+</div>
+
+<!-- completion overlay -->
+<div class="overlay" id="overlay">
+  <div class="card finish-card">
+    <div class="big" id="finishEmoji">🥋</div>
+    <h2 id="finishTitle">Belt complete</h2>
+    <p id="finishBody">—</p>
+    <button class="btn primary" onclick="restartGame()">Go again</button>
+  </div>
+</div>
+
+<script>
+const GAME_DATA = {
+ "type": "lesson",
+ "title": "Secure Coding Green Belt",
+ "subtitle": "12 flaw → defence pairs · CWE-based · PACE M4 secure coding (SN46/SN47)",
+ "footer": "GREEN BELT · 12 lessons · adapted from OWASP SecureCodingDojo (Apache-2.0); code excerpts rewritten and defence pairings chosen for this pack",
+ "lessons": [
+  {
+   "id": "cwe94",
+   "code": "CWE-94",
+   "severity": "HIGH",
+   "title": "Code Injection",
+   "codeTitle": "Vulnerable — the input is evaluated as code",
+   "body": "<p>The application offers a calculator: it takes a <b>mathematical expression<\/b> from the user and evaluates it. The evaluation engine is a general-purpose one, so whatever the user sends <b>is the program<\/b>.<\/p>\n",
+   "vulnerable": "String input = request.getParameter(\"expr\");\nScriptEngine engine = new ScriptEngineManager().getEngineByName(\"javascript\");\nObject result = engine.eval(input);           // input IS the program\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Strip quotes, semicolons and brackets from the input before evaluating it.",
+     "why": "Block-lists lose to encodings and alternative syntax; the interpreter is still reachable."
+    },
+    {
+     "text": "Wrap the evaluation in try/catch and cap the input length.",
+     "why": "That changes error handling and size, not the ability to run code."
+    },
+    {
+     "text": "Replace the evaluator with a real expression parser that only accepts numbers and arithmetic operators.",
+     "correct": true,
+     "why": "The flaw is that input becomes code. Parsing the expression so that the result can only be a number removes code execution entirely."
+    }
+   ],
+   "defence": {
+    "name": "inputAllowListing — never let input reach an interpreter",
+    "why": "Allow-list what the input may be (digits and operators), and use a parser built for that grammar. Anything that evaluates external text as a program is out of bounds.",
+    "code": "// no eval: parse and compute\nExpr e = Parser.parse(input, ALLOWED_NUMERIC_GRAMMAR);\ndouble result = e.evaluate();               // cannot execute code\n"
+   },
+   "ref": "CWE-94 · OWASP Top 10:2025 A05 Injection"
+  },
+  {
+   "id": "cwe190",
+   "code": "CWE-190",
+   "severity": "HIGH",
+   "title": "Integer Overflow and Wraparound",
+   "codeTitle": "Vulnerable — the attempt counter can wrap",
+   "body": "<p>The login has a lockout counter. The counter is stored in a narrow integer, so it can be pushed past its maximum and <b>wrap around<\/b> — the lockout silently disappears while the attacker keeps guessing.<\/p>\n",
+   "vulnerable": "short tries = (short) session.getAttribute(\"tries\");\n...\nsession.setAttribute(\"tries\", (short)(tries + 1));   // wraps at the type limit\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Log every failed attempt and alert on high volumes.",
+     "why": "Detection after the fact does not stop the counter from wrapping."
+    },
+    {
+     "text": "Use a bounded integer and check the boundary before incrementing, locking the account when the limit is reached.",
+     "correct": true,
+     "why": "The counter must be constrained by policy, not by the storage type. Checking the boundary makes the limit authoritative."
+    },
+    {
+     "text": "Raise the lockout threshold from 40 to 400 attempts.",
+     "why": "A different number, the same wraparound — and a weaker lockout."
+    }
+   ],
+   "defence": {
+    "name": "checkBoundaries — validate the limit, do not rely on the type",
+    "why": "Decide the maximum, store it in a type that can hold it, and check before every increment. Detection in the SIEM is a second layer, never the control.",
+    "code": "int tries = (int) session.getAttribute(\"tries\");\nif (tries >= MAX_ATTEMPTS) { lockAccount(); }\nelse { session.setAttribute(\"tries\", tries + 1); }\n"
+   },
+   "ref": "CWE-190 · integer wraparound defeating a lockout"
+  },
+  {
+   "id": "cwe209",
+   "code": "CWE-209",
+   "severity": "MEDIUM",
+   "title": "Error Messages That Leak",
+   "codeTitle": "Vulnerable — detail is returned to the client",
+   "body": "<p>When something fails, the application prints the exception to the browser. Error text carries <b>schema names, file paths, library versions and query fragments<\/b> — a free map of the internals for an attacker.<\/p>\n",
+   "vulnerable": "try {\n  runQuery(sql);\n} catch (SQLException e) {\n  out.println(\"Query failed: \" + e);      // schema, SQL, paths → client\n}\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Only print the exception when the user is authenticated.",
+     "why": "Authenticated users are not the only attackers, and the leak still happens."
+    },
+    {
+     "text": "HTML-encode the exception text before printing it.",
+     "why": "That prevents script injection in the page, not the disclosure."
+    },
+    {
+     "text": "Return a generic message with a correlation id, and write the detail to the server-side log.",
+     "correct": true,
+     "why": "The support path keeps the detail while the client learns nothing useful. This is the standard split."
+    }
+   ],
+   "defence": {
+    "name": "displayGenericErrorMessages — detail on the server, a reference for the user",
+    "why": "The user gets \"something went wrong\" plus an id; the operator gets the stack trace in the log. Nothing about the internals crosses the boundary.",
+    "code": "catch (SQLException e) {\n  String ref = Log.error(\"query failed\", e);     // full detail server-side\n  res.getWriter().println(\"Something went wrong. Reference: \" + ref);\n}\n"
+   },
+   "ref": "CWE-209 · OWASP Top 10:2025 A02 Security Misconfiguration"
+  },
+  {
+   "id": "cwe306",
+   "code": "CWE-306",
+   "severity": "HIGH",
+   "title": "Missing Authentication",
+   "codeTitle": "Vulnerable — the protected handler never checks the session",
+   "body": "<p>The reporting handler builds and returns sensitive output, but it <b>never calls the authentication check<\/b>. The login page in front of it is decoration: the URL answers anyone.<\/p>\n",
+   "vulnerable": "protected void doGet(HttpServletRequest req, HttpServletResponse res) {\n  String report = Reporting.buildReport();      // no session check at all\n  res.getWriter().println(report);\n}\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Hide the link in the UI unless the user is logged in.",
+     "why": "Client-side hiding changes nothing for a direct request."
+    },
+    {
+     "text": "Enforce authentication by default on protected paths — check the session before any protected work is done.",
+     "correct": true,
+     "why": "Authentication must be a property of the resource, not a step someone remembers to call. Deny by default and let the framework admit authenticated requests."
+    },
+    {
+     "text": "Rename the handler so it cannot be guessed.",
+     "why": "Obscurity is not authentication, and URLs leak."
+    }
+   ],
+   "defence": {
+    "name": "authenticationByDefault — protect the resource, not the link",
+    "why": "Every protected endpoint checks identity before doing work. New endpoints inherit the check instead of having to remember it.",
+    "code": "protected void doGet(HttpServletRequest req, HttpServletResponse res) {\n  if (!Auth.isAuthenticated(req.getSession())) { res.sendError(401); return; }\n  res.getWriter().println(Reporting.buildReport());\n}\n"
+   },
+   "ref": "CWE-306 · OWASP Top 10:2025 A01 Broken Access Control"
+  },
+  {
+   "id": "cwe307",
+   "code": "CWE-307",
+   "severity": "MEDIUM",
+   "title": "Password Guessing",
+   "codeTitle": "Vulnerable — unlimited attempts, weak policy",
+   "body": "<p>Authentication accepts an unlimited number of attempts and the password policy allows dictionary words. Neither half is sophisticated to exploit: <b>volume plus a common password<\/b> is enough.<\/p>\n",
+   "vulnerable": "POST /login          → unlimited attempts, no delay, no lockout\npolicy               → \"password\", \"Summer2026\" accepted\nsession              → no failed-attempt counter anywhere\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Add a CAPTCHA to the login form.",
+     "why": "Useful friction, but it is bypassable at scale and does nothing about weak passwords."
+    },
+    {
+     "text": "Log failures to the SIEM and alert after 100 attempts.",
+     "why": "Detection helps after the fact; the account is already being guessed."
+    },
+    {
+     "text": "Enforce a password policy and throttle or lock authentication after repeated failures.",
+     "correct": true,
+     "why": "Two halves, both needed: make each guess unlikely to succeed, and make guessing cost time. Together they change the economics of the attack."
+    }
+   ],
+   "defence": {
+    "name": "loginBestPractices — policy plus throttling",
+    "why": "Length-based policy, a check against breach corpora, per-account and per-source throttling, and a lockout that a human can clear.",
+    "code": "if (Failures.for(user).count() >= MAX || RateLimiter.blocked(ip)) { delayAndRefuse(); }\nif (!Policy.allows(password)) { rejectWithGuidance(); }\n"
+   },
+   "ref": "CWE-307 · OWASP Top 10:2025 A07 Authentication Failures"
+  },
+  {
+   "id": "cwe311",
+   "code": "CWE-311",
+   "severity": "HIGH",
+   "title": "Missing Encryption of Sensitive Data",
+   "codeTitle": "Vulnerable — base64 is not protection",
+   "body": "<p>Passwords are <b>base64-encoded<\/b> before storage. Base64 is a transport encoding, not a one-way function: anyone who reads the table can reverse every password in seconds.<\/p>\n",
+   "vulnerable": "tmpPwd = Base64.getEncoder().encodeToString(tmpPwd.getBytes(\"UTF-8\"));\nuser.setPassword(tmpPwd);        // reversible — reads back in one line\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Store the value in a column only administrators can read.",
+     "why": "Access control on a reversible value reduces exposure; it does not make the password unreadable."
+    },
+    {
+     "text": "Store a salted, slow password hash (bcrypt, argon2id) instead of any reversible encoding.",
+     "correct": true,
+     "why": "Password storage needs a one-way function with a per-user salt and a work factor; encode/encrypt is reversible by definition."
+    },
+    {
+     "text": "Encrypt the base64 value with an AES key held in the source.",
+     "why": "Now the key is the secret — and a key shipped with the application is not a secret."
+    }
+   ],
+   "defence": {
+    "name": "useStrongDataEncryption — one-way for passwords",
+    "why": "Passwords get a KDF with salt and cost. Encryption is for data you must read back, and its keys live in a key store, never in the code.",
+    "code": "String hash = BCrypt.hashpw(password, BCrypt.gensalt(12));\nuser.setPassword(hash);\n"
+   },
+   "ref": "CWE-311 · OWASP Top 10:2025 A04 Cryptographic Failures"
+  },
+  {
+   "id": "cwe327",
+   "code": "CWE-327",
+   "severity": "HIGH",
+   "title": "Broken or Risky Cryptographic Algorithm",
+   "codeTitle": "Vulnerable — MD5 / SHA-1 for password hashing",
+   "body": "<p>Someone did think about hashing — and chose <b>MD5 or SHA-1<\/b>. Both are fast and collision-prone, which is exactly wrong for passwords: commodity hardware tries billions of guesses per second.<\/p>\n",
+   "vulnerable": "byte[] hash = Crypto.getInstance().getHash(tmpPwd, \"SHA-1\");\ntmpPwd = Util.bytesToHex(hash);        // fast, unsalted, obsolete\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Hash the password twice with SHA-1 to double the strength.",
+     "why": "Two fast hashes are still fast, and collisions remain."
+    },
+    {
+     "text": "Add one fixed application-wide salt to the SHA-1 hash.",
+     "why": "A global salt does not stop a targeted dictionary attack and leaves identical passwords identical."
+    },
+    {
+     "text": "Retire MD5/SHA-1 for password storage and migrate to a memory-hard KDF with a per-user salt.",
+     "correct": true,
+     "why": "Hash speed is the attacker's advantage. A KDF with a tunable work factor makes each guess expensive; a salt makes precomputation useless."
+    }
+   ],
+   "defence": {
+    "name": "useStrongDataEncryption — current algorithms, tunable cost",
+    "why": "Pick what the field currently considers strong, use a vetted implementation, and never write a custom algorithm. For passwords that means a salted KDF with a work factor you can raise.",
+    "code": "String hash = Argon2.hash(password, salt = random(16), cost = 65536);\n"
+   },
+   "ref": "CWE-327 · OWASP Top 10:2025 A04 Cryptographic Failures"
+  },
+  {
+   "id": "cwe494",
+   "code": "CWE-494",
+   "severity": "HIGH",
+   "title": "Download of Code Without Integrity Check",
+   "codeTitle": "Vulnerable — an artefact is installed unverified",
+   "body": "<p>The application downloads a plugin from an update server and installs it. Nothing checks that the bytes are the bytes that were published — <b>whoever controls the transit or the server controls the code<\/b>.<\/p>\n",
+   "vulnerable": "byte[] plugin = httpGet(UPDATE_URL + \"/plugin.jar\");\nFiles.write(installPath, plugin);\nloadPlugin(installPath);        // never verified, never signed\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Install into a directory that is not web-accessible.",
+     "why": "That changes where it lands, not whether it is trustworthy."
+    },
+    {
+     "text": "Verify a digital signature (or a pinned hash) over the artefact before installing, and fail closed.",
+     "correct": true,
+     "why": "Integrity is a property you verify, not a property you hope for. Failing closed means a bad artefact stops the update instead of running."
+    },
+    {
+     "text": "Download the artefact over HTTPS only.",
+     "why": "TLS protects the transport, not the origin or the artefact at rest."
+    }
+   ],
+   "defence": {
+    "name": "integrityVerification — verify before you execute",
+    "why": "Sign artefacts and verify against a trusted key; refuse anything that does not verify. Apply it to updates, plugins, models and configuration alike.",
+    "code": "byte[] plugin = httpGet(UPDATE_URL + \"/plugin.jar\");\nif (!Signature.verify(plugin, TRUSTED_PUBLIC_KEY)) throw new SecurityException(\"bad signature\");\nFiles.write(installPath, plugin);\n"
+   },
+   "ref": "CWE-494 · OWASP Top 10:2025 A08 Software or Data Integrity Failures"
+  },
+  {
+   "id": "cwe759",
+   "code": "CWE-759",
+   "severity": "HIGH",
+   "title": "One-Way Hash Without a Salt",
+   "codeTitle": "Vulnerable — same password, same digest",
+   "body": "<p>The hash is a modern one — SHA-256 — but <b>unsalted<\/b>. Two users with the same password get identical digests, so one crack opens every account, and precomputed tables do the work up front.<\/p>\n",
+   "vulnerable": "byte[] hash = Crypto.getInstance().getHash(tmpPwd, \"SHA256\");\ntmpPwd = Util.bytesToHex(hash);        // no per-user salt\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Switch to SHA-512 without a salt.",
+     "why": "Longer digest, same two problems: identical passwords match and it is still fast."
+    },
+    {
+     "text": "Add a secret constant prefix to every password before hashing.",
+     "why": "A fixed secret applied to all passwords is a single point of failure, and identical passwords still collide."
+    },
+    {
+     "text": "Generate a unique random salt per password and use a slow KDF with a work factor.",
+     "correct": true,
+     "why": "The salt makes precomputation per-user, and the work factor makes each attempt expensive. Neither half works without the other."
+    }
+   ],
+   "defence": {
+    "name": "useStrongDataEncryption — salt every password, then slow it down",
+    "why": "Salt per user, store the salt beside the hash, and choose a KDF whose cost you can raise as hardware improves.",
+    "code": "byte[] salt = Crypto.randomBytes(16);\nString hash = PBKDF2.hash(password, salt, iterations = 210000);\nuser.setPassword(hash, salt);\n"
+   },
+   "ref": "CWE-759 · OWASP Top 10:2025 A04 Cryptographic Failures"
+  },
+  {
+   "id": "cwe798",
+   "code": "CWE-798",
+   "severity": "HIGH",
+   "title": "Hard-Coded Credentials",
+   "codeTitle": "Vulnerable — the secret ships with the application",
+   "body": "<p>A privileged credential lives in the source. Everything in the repository is available to everyone who can read it — and the credential keeps working after the code has moved on.<\/p>\n",
+   "vulnerable": "private static final String DB_PASSWORD = \"Pr0d_Admin!2026\";\nConnection c = DriverManager.getConnection(DB_URL, \"svc_app\", DB_PASSWORD);\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Move the file to a private repository.",
+     "why": "Fewer readers is not a control over the credential's life, and it still ships in the build."
+    },
+    {
+     "text": "Move the secret into a managed secret store or an instance role, rotate the exposed value, and keep it out of the repository.",
+     "correct": true,
+     "why": "The control is separation: the application gets a capability, not a stored secret, and the exposed value is rotated because it must be assumed compromised."
+    },
+    {
+     "text": "Base64-encode the credential inside the source.",
+     "why": "Encoding is not secrecy; the value still ships and still works."
+    }
+   ],
+   "defence": {
+    "name": "resourceSeparation + enforceSafeConfig — capabilities, not constants",
+    "why": "Secrets come from outside the artefact (secret manager, instance role, injected environment), are scoped to the minimum privilege, and are rotated on exposure.",
+    "code": "String pw = SecretStore.get(\"svc_app/db\");     // resolved at run time, never in source\nConnection c = DriverManager.getConnection(DB_URL, \"svc_app\", pw);\n"
+   },
+   "ref": "CWE-798 · OWASP Top 10:2025 A05 Injection-adjacent config risk"
+  },
+  {
+   "id": "cwe807",
+   "code": "CWE-807",
+   "severity": "HIGH",
+   "title": "Reliance on Untrusted Input in a Security Decision",
+   "codeTitle": "Vulnerable — the client decides who is an admin",
+   "body": "<p>An authorization decision reads a <b>parameter the browser supplies<\/b>. Changing one character in the URL changes the user's privilege — the server simply believes what it is told.<\/p>\n",
+   "vulnerable": "// ?isAdmin=false — trivially edited in the address bar\nboolean isAdmin = Boolean.parseBoolean(request.getParameter(\"isAdmin\"));\nif (isAdmin) { showAdminPanel(); }\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Send the parameter in a POST body instead of the URL.",
+     "why": "The location changes; the trust in it does not."
+    },
+    {
+     "text": "Add a checksum to the parameter so it cannot be modified.",
+     "why": "Now a client-visible secret is the control — and it can be replayed."
+    },
+    {
+     "text": "Make the decision server-side from the authenticated session or identity — never from client input.",
+     "correct": true,
+     "why": "Authority is derived from authenticated state the client cannot write. Anything the browser can edit is data, not a decision."
+    }
+   ],
+   "defence": {
+    "name": "serverSideValidation — validate and decide on the server",
+    "why": "Client-side checks are for user experience. Every security-relevant test — authorization, price, limits, role — is re-derived server-side from trusted state.",
+    "code": "boolean isAdmin = Auth.roles(req.getSession()).contains(\"ADMIN\");   // server-side truth\nif (isAdmin) { showAdminPanel(); }\n"
+   },
+   "ref": "CWE-807 · OWASP Top 10:2025 A01 Broken Access Control"
+  },
+  {
+   "id": "cwe862",
+   "code": "CWE-862",
+   "severity": "HIGH",
+   "title": "Missing Authorization",
+   "codeTitle": "Vulnerable — hidden, therefore reachable",
+   "body": "<p>The admin page is not linked in the UI, and that is its entire protection. A log-in check is not an <b>authorization<\/b> check: any authenticated user can reach it, and a scanner finds the path without being told.<\/p>\n",
+   "vulnerable": "// admin.jsp — unlinked, unlisted, still served\nif (session.getAttribute(\"loggedin\") == null) return;      // identity ≠ privilege\nshowAdminPanel();\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Add the path to robots.txt and a WAF rule.",
+     "why": "robots.txt is advisory and a WAF rule is a filter, not an authorization decision."
+    },
+    {
+     "text": "Check authorization on every privileged action server-side, denying by default — hiding a page is not a control.",
+     "correct": true,
+     "why": "Hiding changes discoverability, not access. The check must be on the action, tied to the role, and it must fail closed."
+    },
+    {
+     "text": "Rename the page to a long random filename.",
+     "why": "Unlisted paths are found by fuzzing and by log or repository leaks."
+    }
+   ],
+   "defence": {
+    "name": "principleOfLeastPrivilege — authorization on the action",
+    "why": "Every privileged action checks the caller's entitlement and denies by default; roles are granted narrowly and reviewed. Discovery is irrelevant when the door is locked.",
+    "code": "if (!Authz.allowed(session, \"admin.panel.view\")) { res.sendError(403); return; }\nshowAdminPanel();\n"
+   },
+   "ref": "CWE-862 · OWASP Top 10:2025 A01 Broken Access Control"
+  }
+ ]
+};
+</script>
+<script src="config.js?v=2"></script>
+<script src="sync.js?v=2"></script>
+<script>
+(function () {
+  "use strict";
+  var sync = window.PACE && window.PACE.sync;
+
+  function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  function teamName() { return sync ? sync.getProfile().teamName : "Group 0"; }
+  function playerName() {
+    if (!sync) return "";
+    return sync.getProfile().playerName || "anonymous";
+  }
+
+  function setStatus(state) {
+    var el = document.getElementById("syncDot");
+    if (!el) return;
+    var map = { ok: ["✓", "#34d399"], fail: ["✗", "#f87171"], off: ["·", "#4a5a6a"] };
+    var v = map[state] || map.off;
+    el.textContent = v[0];
+    el.style.color = v[1];
+    el.title = "sync: " + state;
+  }
+
+  function push(scoreDelta, solvedId, accuracy) {
+    if (!sync || !sync.ready) { setStatus("off"); return; }
+    var solved;
+    if (solvedId) { solved = {}; solved[solvedId] = true; }
+    var title = (typeof GAME_DATA !== "undefined" && GAME_DATA && GAME_DATA.title) || "game";
+    sync.reportTeam({
+      scoreDelta: scoreDelta || 0,
+      solved: solved,
+      accuracy: accuracy,
+      game: title
+    }).then(function () { setStatus("ok"); }).catch(function () { setStatus("fail"); });
+  }
+
+  function refreshTeam() {
+    var el = document.getElementById("teamName");
+    if (el) el.textContent = teamName();
+    var pe = document.getElementById("teamPlayer");
+    if (pe) pe.textContent = playerName();
+  }
+
+  function gearBtn() {
+    var b = document.createElement("button");
+    b.id = "teamGear";
+    b.textContent = "⚙";
+    b.title = "Change team";
+    b.setAttribute("aria-label", "Change team");
+    b.style.cssText = "position:fixed;top:12px;right:12px;z-index:9997;width:38px;height:38px;border-radius:50%;border:1px solid #243140;background:#182230;color:#d7e2ec;font-size:18px;cursor:pointer";
+    b.onclick = function () { if (sync) sync.registerModal({ onRegister: refreshTeam }); };
+    document.body.appendChild(b);
+  }
+
+  function teamStat() {
+    var sb = document.querySelector(".scoreBar");
+    if (!sb) return;
+    var d = document.createElement("div");
+    d.className = "stat";
+    d.id = "teamStat";
+    d.innerHTML = '<div class="label">Team</div>' +
+      '<div class="value" id="teamName" style="font-size:12px">' + esc(teamName()) +
+      ' <span id="syncDot" style="font-size:11px" title="sync: off">·</span></div>' +
+      '<div style="font-size:10px;color:#7d8ea3;text-align:center" id="teamPlayer">' + esc(playerName()) + "</div>";
+    sb.appendChild(d);
+    setStatus("off");
+  }
+
+  if (sync) sync.registerModal({ onRegister: refreshTeam });
+  gearBtn();
+  teamStat();
+
+  window.PACE = window.PACE || {};
+  window.PACE.gameSync = {
+    push: push,
+    teamName: teamName,
+    openRegister: function () { if (sync) sync.registerModal({ onRegister: refreshTeam }); },
+    refreshTeam: refreshTeam
+  };
+})();
+
+</script>
+<script>
+/* lesson.js — flaw/defence lesson archetype.
+ *
+ * One belt = a flat list of lessons. Each lesson shows the flaw, the vulnerable
+ * code, and asks the learner to choose the change that removes it; answering
+ * reveals the defence (name + code + why). Content lives in the markdown pack —
+ * nothing in here is course-specific.
+ *
+ * Scoring: 100 first try, 50 after a miss, 0 for a miss. A lesson is `solved`
+ * when the correct option is picked, and stays solved on chip navigation.
+ */
+
+const state = {
+  index: 0,
+  picked: {},     // lessonId -> index of the correct option that was chosen
+  tried: {},      // lessonId -> [option indices tried]
+  score: 0,
+  locked: false
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function lessons() { return GAME_DATA.lessons; }
+function currentLesson() { return lessons()[state.index]; }
+function totalLessons() { return lessons().length; }
+function solvedCount() { return Object.keys(state.picked).length; }
+function firstTryCount() {
+  return Object.keys(state.picked).filter(id => !(state.tried[id] || []).length).length;
+}
+function attemptedCount() { return Object.keys(state.tried).length; }
+
+function renderHeader() {
+  const done = solvedCount(), total = totalLessons();
+  $("scoreNum").textContent = state.score;
+  $("progressBar").style.width = (total ? (100 * done / total) : 0) + "%";
+  $("progressText").textContent = done + " / " + total + " lessons solved";
+}
+
+function renderChips() {
+  const box = $("chips");
+  box.innerHTML = "";
+  lessons().forEach((l, i) => {
+    const c = document.createElement("div");
+    c.className = "chip";
+    if (state.picked[l.id] !== undefined) c.classList.add("done");
+    if (i === state.index) c.classList.add("current");
+    c.textContent = l.code || l.id;
+    c.title = l.title;
+    c.onclick = () => gotoLesson(i);
+    box.appendChild(c);
+  });
+}
+
+function renderLesson() {
+  const l = currentLesson();
+  $("lessonCount").textContent = "Lesson " + (state.index + 1) + " of " + totalLessons();
+  $("codeBadge").textContent = l.code || "";
+  $("codeBadge").className = "roundBadge threat-" + (l.severity || "MEDIUM");
+  $("lessonTitle").textContent = l.title;
+  $("lessonBody").innerHTML = l.body || "";
+  $("codeTitle").textContent = l.codeTitle || "Vulnerable code";
+  $("vulnCode").textContent = (l.vulnerable || "").replace(/\s+$/, "");
+  $("questionLabel").textContent = l.question || "Which change removes the flaw?";
+
+  const box = $("actions");
+  box.innerHTML = "";
+  (l.options || []).forEach((o, i) => {
+    const btn = document.createElement("button");
+    btn.className = "action";
+    btn.id = "act" + i;
+    btn.innerHTML = '<div class="act-title">' + esc(o.text) + "</div>";
+    btn.onclick = () => pick(i);
+    box.appendChild(btn);
+  });
+
+  const fb = $("feedback");
+  fb.className = "feedback";
+  fb.innerHTML = "";
+  $("nextBtn").style.display = "none";
+  $("defenceCard").style.display = "none";
+  state.locked = false;
+
+  // restore a lesson already solved (chip navigation revisits it)
+  if (state.picked[l.id] !== undefined) {
+    const tried = state.tried[l.id] || [];
+    (l.options || []).forEach((o, bi) => {
+      const btn = document.getElementById("act" + bi);
+      btn.disabled = true;
+      if (o.correct === true) btn.classList.add("correct");
+      else if (tried.indexOf(bi) !== -1) btn.classList.add("wrong");
+    });
+    const right = (l.options || []).find(o => o.correct === true) || {};
+    fb.className = "feedback ok";
+    fb.innerHTML = "<b>✅ Solved.</b> " + esc(right.why || "");
+    revealDefence(l);
+    $("nextBtn").style.display = "inline-block";
+    state.locked = true;
+  }
+  renderChips();
+  renderHeader();
+}
+
+function revealDefence(l) {
+  if (!l.defence) return;
+  $("defenceName").textContent = l.defence.name || "";
+  $("defenceWhy").textContent = l.defence.why || "";
+  $("defenceCode").textContent = (l.defence.code || "").replace(/\s+$/, "");
+  $("defenceCard").style.display = "block";
+}
+
+function gotoLesson(i) {
+  state.index = i;
+  renderLesson();
+}
+
+function pick(i) {
+  if (state.locked) return;
+  const l = currentLesson();
+  if (state.picked[l.id] !== undefined) return;   // already solved — no re-scoring
+  const o = (l.options || [])[i];
+  if (!o) return;
+  const correct = o.correct === true;
+
+  state.tried[l.id] = (state.tried[l.id] || []).concat([i]);
+  const firstTry = correct && state.tried[l.id].length === 1;
+  const points = firstTry ? 100 : (correct ? 50 : 0);
+
+  document.getElementById("act" + i).classList.add(correct ? "correct" : "wrong");
+
+  if (correct) {
+    state.picked[l.id] = i;
+    state.score += points;
+    state.locked = true;
+    (l.options || []).forEach((op, bi) => {
+      const btn = document.getElementById("act" + bi);
+      btn.disabled = true;
+      if (op.correct === true) btn.classList.add("correct");
+      else if ((state.tried[l.id] || []).indexOf(bi) !== -1) btn.classList.add("wrong");
+    });
+    const fb = $("feedback");
+    fb.className = "feedback ok";
+    fb.innerHTML = "<b>✅ " + (firstTry ? "First try." : "Solved.") + "</b> " + esc(o.why || "");
+    revealDefence(l);
+    $("nextBtn").style.display = "inline-block";
+    sync_push(points);
+    if (solvedCount() === totalLessons()) showFinish();
+  } else {
+    document.getElementById("act" + i).disabled = true;
+    const fb = $("feedback");
+    fb.className = "feedback bad";
+    fb.innerHTML = "<b>❌ Not this one.</b> " + esc(o.why || "") + " Try again.";
+    sync_push(0);
+  }
+  renderHeader();
+  renderChips();
+}
+
+function nextLesson() {
+  if (state.index + 1 < totalLessons()) {
+    state.index++;
+    renderLesson();
+  } else {
+    showFinish();
+  }
+}
+
+function showFinish() {
+  const total = totalLessons(), first = firstTryCount();
+  $("finishTitle").textContent = "Green Belt complete";
+  $("finishBody").innerHTML = "You solved <b>" + total + "</b> lessons for <b>" + state.score +
+    "</b> points; <b>" + first + "/" + total + "</b> on the first try.";
+  $("overlay").classList.add("show");
+}
+
+function restartGame() {
+  state.index = 0;
+  state.picked = {};
+  state.tried = {};
+  state.score = 0;
+  state.locked = false;
+  $("overlay").classList.remove("show");
+  renderLesson();
+}
+
+/* sync: push on every answer (points + lesson id + accuracy = first-try rate) */
+function sync_push(points) {
+  if (!(window.PACE && window.PACE.gameSync)) return;
+  const attempted = Math.max(1, attemptedCount());
+  const accuracy = firstTryCount() / attempted;
+  try {
+    window.PACE.gameSync.push(points, currentLesson().id, accuracy);
+  } catch (e) { /* sync must never break play */ }
+}
+
+$("nextBtn").onclick = nextLesson;
+renderLesson();
+
+</script>
+</body>
+</html>

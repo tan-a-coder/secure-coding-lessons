@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Coding — Green Belt</title>
+<style>
+  :root {
+    --bg: #0b0f14; --panel: #111822; --border: #1e2a3a;
+    --text: #d7e2ee; --dim: #7d8ea3;
+    --cyan: #38e1ff; --green: #3ddc84; --amber: #ffb454; --purple: #a78bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 40px 16px; display: flex; flex-direction: column; align-items: center;
+  }
+  .wrap { max-width: 760px; width: 100%; }
+  h1 {
+    font-size: 1.7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 6px;
+  }
+  .sub { color: var(--dim); font-size: .88rem; margin-bottom: 28px; }
+  a.card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; margin-bottom: 16px; display: block; text-decoration: none; color: var(--text);
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  a.card:hover { border-color: var(--green); transform: translateY(-2px); }
+  a.card h2 { font-size: 1.05rem; letter-spacing: .04em; margin-bottom: 6px; }
+  a.card p { color: var(--dim); font-size: .86rem; line-height: 1.5; }
+  .tag {
+    display: inline-block; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--green); border: 1px solid var(--border); border-radius: 999px;
+    padding: 3px 10px; margin-bottom: 10px;
+  }
+  footer { color: var(--dim); font-size: .76rem; line-height: 1.6; margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Secure Coding — Green Belt</h1>
+  <div class="sub">Twelve flaw → defence lessons. Spot the flaw in the code, choose the change that removes it, then compare with the control.</div>
+
+  <a class="card" href="secure-coding-green-belt.html">
+    <span class="tag">12 lessons · CWE-based</span>
+    <h2>Green Belt — attack &amp; defence</h2>
+    <p>Injection, boundaries, information leakage, authentication, cryptography, integrity,
+       secrets, validation and authorization. First-try correct scores 100; finding it after a
+       miss scores 50. Works offline in any browser.</p>
+  </a>
+
+  <footer>
+    Lesson content adapted from the OWASP SecureCodingDojo Green Belt (Apache-2.0);
+    code excerpts rewritten and defence pairings authored for this pack.
+  </footer>
+</div>
+</body>
+</html>
