@@ -29,7 +29,7 @@ body {
 }
 .wrap { max-width: 980px; margin: 0 auto; }
 
-/* header */
+
 .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
 .game-title {
   font-size: 1.9rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
@@ -47,7 +47,7 @@ body {
 .progressBar > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width .4s ease; }
 #progressText { font-size: .72rem; color: var(--dim); margin-top: 6px; font-family: var(--mono); }
 
-/* tabs */
+
 .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .tab {
   padding: 9px 22px; border-radius: 8px; border: 1px solid var(--border);
@@ -56,7 +56,7 @@ body {
 }
 .tab.active { background: rgba(56,225,255,.12); border-color: var(--cyan); color: var(--cyan); }
 
-/* layout */
+
 .layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; }
 @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
 
@@ -107,7 +107,7 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
 .btn.warn { color: var(--amber); border-color: rgba(255,180,84,.4); }
 .btn.bad { color: var(--red); border-color: rgba(255,92,108,.4); }
 
-/* multiple-choice actions */
+
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
 .action {
   text-align: left; background: var(--panel2); border: 1px solid var(--border); border-radius: 10px;
@@ -127,7 +127,7 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
 .feedback .expected { margin-top: 8px; font-family: var(--mono); font-size: .8rem; background: rgba(0,0,0,.35); padding: 8px 10px; border-radius: 6px; }
 .feedback .ref { margin-top: 8px; font-size: .78rem; color: var(--dim); }
 
-/* round chips */
+
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .chip {
   font-family: var(--mono); font-size: .72rem; padding: 5px 12px; border-radius: 99px;
@@ -139,7 +139,7 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
 .chip.tab-label { cursor: default; color: var(--dim); border: none; font-family: inherit; letter-spacing: .1em; text-transform: uppercase; font-size: .68rem; padding: 6px 4px; }
 .chip.tab-label.module { color: var(--purple); }
 
-/* completion overlay */
+
 .overlay {
   position: fixed; inset: 0; background: rgba(4,8,12,.92); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px;
 }
@@ -152,12 +152,38 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
 .footer b { color: var(--cyan); }
 
 
-/* archetype: CWE explanation note, rendered directly under the vulnerable code */
+
 .noteBox { margin-top: 2px; padding: 12px 14px; border-left: 3px solid #38e1ff;
   background: #0e1720; border-radius: 8px; }
 .noteBox .noteHead { font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: #38e1ff; margin-bottom: 6px; }
 .noteBox .noteText { font-size: 13px; line-height: 1.55; color: #a9bccd; margin: 0; }
+
+
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 4px; }
+.tab { display: flex; align-items: center; gap: 8px; padding: 9px 14px; cursor: pointer;
+  background: #0e1a26; color: #9fb4c9; border: 1px solid #22364a; border-radius: 10px;
+  font: inherit; font-size: 14px; }
+.tab:hover { border-color: #38e1ff; color: #dceaf7; }
+.tab.active { background: #10283a; border-color: #38e1ff; color: #eaf6ff; font-weight: 700; }
+.tab .tabCount { font-size: 11px; letter-spacing: .06em; color: #6f879c;
+  border: 1px solid #22364a; border-radius: 20px; padding: 1px 7px; }
+.tab.active .tabCount { color: #38e1ff; border-color: #1d4c5e; }
+
+
+.coverageGrid { display: grid; grid-template-columns: 1fr; gap: 6px; margin: 8px 0 6px; }
+.covItem { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 8px;
+  border: 1px solid #22364a; background: #0b1622; font-size: 11.5px; color: #7d93a8; }
+.covItem b { min-width: 34px; color: #5c748c; font-size: 11px; }
+.covItem span { flex: 1; }
+.covItem.open { border-color: #2d4459; color: #9fb4c9; }
+.covItem.lit { border-color: #2b7b65; background: #0b2a22; color: #b8f3dc; }
+.covItem.lit b { color: #38e1ff; }
+.covItem.gap { border-style: dashed; border-color: #334b60; color: #67808f; }
+.covMark { font-style: normal; font-size: 11px; }
+.covItem.lit .covMark { color: #47e0a6; }
+.covItem.gap .covMark { color: #4a6377; }
+.coverageNote { font-size: 11px; line-height: 1.5; color: #6f879c; margin: 4px 0 0; }
 </style>
 </head>
 <body>
@@ -166,7 +192,7 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
   <div class="hero">
     <div>
       <div class="game-title">Secure Coding Green Belt</div>
-      <div class="subtitle">12 flaw → defence pairs · CWE-based · PACE M4 secure coding (SN46/SN47)</div>
+      <div class="subtitle">22 flaw → defence pairs · CWE secure coding (SN46/SN47) + the OWASP Mobile Top 10 (SN50)</div>
     </div>
     <div class="scoreBar">
       <div class="stat">
@@ -179,6 +205,8 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
       </div>
     </div>
   </div>
+
+  <div class="tabs" id="tabs"></div>
 
   <div class="layout">
     <!-- left: the flaw -->
@@ -222,10 +250,16 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
       </div>
 
       <div class="chips" id="chips"></div>
+
+      <div class="card" id="coverageCard">
+        <div class="sectionTitle" id="coverageHead">Coverage</div>
+        <div class="coverageGrid" id="coverageGrid"></div>
+        <p class="coverageNote" id="coverageNote"></p>
+      </div>
     </div>
   </div>
 
-  <div class="footer">GREEN BELT · 12 lessons · adapted from OWASP SecureCodingDojo (Apache-2.0); code excerpts rewritten and defence pairings chosen for this pack</div>
+  <div class="footer">GREEN BELT · 12 CWE lessons + 10 mobile lessons · CWE set adapted from OWASP SecureCodingDojo (Apache-2.0), code excerpts rewritten and defence pairings chosen for this pack · mobile set adapted from the M4 SN50 'Own the Device' game; OWASP Mobile Top 10:2024 is OWASP's own framework</div>
 </div>
 
 <!-- completion overlay -->
@@ -242,11 +276,108 @@ h2.roundTitle { font-size: 1.15rem; margin-bottom: 10px; }
 const GAME_DATA = {
  "type": "lesson",
  "title": "Secure Coding Green Belt",
- "subtitle": "12 flaw → defence pairs · CWE-based · PACE M4 secure coding (SN46/SN47)",
- "footer": "GREEN BELT · 12 lessons · adapted from OWASP SecureCodingDojo (Apache-2.0); code excerpts rewritten and defence pairings chosen for this pack",
+ "subtitle": "22 flaw → defence pairs · CWE secure coding (SN46/SN47) + the OWASP Mobile Top 10 (SN50)",
+ "footer": "GREEN BELT · 12 CWE lessons + 10 mobile lessons · CWE set adapted from OWASP SecureCodingDojo (Apache-2.0), code excerpts rewritten and defence pairings chosen for this pack · mobile set adapted from the M4 SN50 'Own the Device' game; OWASP Mobile Top 10:2024 is OWASP's own framework",
+ "tabs": [
+  {
+   "id": "web",
+   "label": "Web & CWE",
+   "coverage_label": "OWASP Top 10 — 2025",
+   "coverage": [
+    [
+     "A01",
+     "Broken Access Control"
+    ],
+    [
+     "A02",
+     "Security Misconfiguration"
+    ],
+    [
+     "A03",
+     "Software Supply Chain Failures"
+    ],
+    [
+     "A04",
+     "Cryptographic Failures"
+    ],
+    [
+     "A05",
+     "Injection"
+    ],
+    [
+     "A06",
+     "Insecure Design"
+    ],
+    [
+     "A07",
+     "Authentication Failures"
+    ],
+    [
+     "A08",
+     "Software or Data Integrity Failures"
+    ],
+    [
+     "A09",
+     "Security Logging and Alerting Failures"
+    ],
+    [
+     "A10",
+     "Mishandling of Exceptional Conditions"
+    ]
+   ]
+  },
+  {
+   "id": "mobile",
+   "label": "Mobile",
+   "coverage_label": "OWASP Mobile Top 10 — 2024",
+   "coverage": [
+    [
+     "M1",
+     "Improper Credential Usage"
+    ],
+    [
+     "M2",
+     "Inadequate Supply Chain Security"
+    ],
+    [
+     "M3",
+     "Insecure Authentication/Authorization"
+    ],
+    [
+     "M4",
+     "Insufficient Input/Output Validation"
+    ],
+    [
+     "M5",
+     "Insecure Communication"
+    ],
+    [
+     "M6",
+     "Inadequate Privacy Controls"
+    ],
+    [
+     "M7",
+     "Insufficient Binary Protections"
+    ],
+    [
+     "M8",
+     "Security Misconfiguration"
+    ],
+    [
+     "M9",
+     "Insecure Data Storage"
+    ],
+    [
+     "M10",
+     "Insufficient Cryptography"
+    ]
+   ]
+  }
+ ],
  "lessons": [
   {
    "id": "cwe94",
+   "tab": "web",
    "code": "CWE-94",
    "severity": "HIGH",
    "title": "Code Injection",
@@ -275,10 +406,12 @@ const GAME_DATA = {
     "code": "// no eval: parse and compute\nExpr e = Parser.parse(input, ALLOWED_NUMERIC_GRAMMAR);\ndouble result = e.evaluate();               // cannot execute code\n"
    },
    "note": "Code injection happens when input is treated as code. The interpreter cannot separate data from instructions, so whatever the user sends becomes behaviour the application executes.",
+   "covers": "A05",
    "ref": "CWE-94 · OWASP Top 10:2025 A05 Injection"
   },
   {
    "id": "cwe190",
+   "tab": "web",
    "code": "CWE-190",
    "severity": "HIGH",
    "title": "Integer Overflow and Wraparound",
@@ -311,6 +444,7 @@ const GAME_DATA = {
   },
   {
    "id": "cwe209",
+   "tab": "web",
    "code": "CWE-209",
    "severity": "MEDIUM",
    "title": "Error Messages That Leak",
@@ -339,10 +473,12 @@ const GAME_DATA = {
     "code": "catch (SQLException e) {\n  String ref = Log.error(\"query failed\", e);     // full detail server-side\n  res.getWriter().println(\"Something went wrong. Reference: \" + ref);\n}\n"
    },
    "note": "Error messages are an information leak. Stack traces, query fragments and internal paths tell an attacker how the system is built and where to aim next.",
+   "covers": "A02",
    "ref": "CWE-209 · OWASP Top 10:2025 A02 Security Misconfiguration"
   },
   {
    "id": "cwe306",
+   "tab": "web",
    "code": "CWE-306",
    "severity": "HIGH",
    "title": "Missing Authentication",
@@ -371,10 +507,12 @@ const GAME_DATA = {
     "code": "protected void doGet(HttpServletRequest req, HttpServletResponse res) {\n  if (!Auth.isAuthenticated(req.getSession())) { res.sendError(401); return; }\n  res.getWriter().println(Reporting.buildReport());\n}\n"
    },
    "note": "Missing authentication means the function does the work without ever establishing who is asking. If the endpoint is reachable, it is usable.",
+   "covers": "A01",
    "ref": "CWE-306 · OWASP Top 10:2025 A01 Broken Access Control"
   },
   {
    "id": "cwe307",
+   "tab": "web",
    "code": "CWE-307",
    "severity": "MEDIUM",
    "title": "Password Guessing",
@@ -403,10 +541,12 @@ const GAME_DATA = {
     "code": "if (Failures.for(user).count() >= MAX || RateLimiter.blocked(ip)) { delayAndRefuse(); }\nif (!Policy.allows(password)) { rejectWithGuidance(); }\n"
    },
    "note": "Without a limit on attempts, a password space becomes a brute-force problem: the attacker trades time for access, and time is cheap.",
+   "covers": "A07",
    "ref": "CWE-307 · OWASP Top 10:2025 A07 Authentication Failures"
   },
   {
    "id": "cwe311",
+   "tab": "web",
    "code": "CWE-311",
    "severity": "HIGH",
    "title": "Missing Encryption of Sensitive Data",
@@ -435,10 +575,12 @@ const GAME_DATA = {
     "code": "String hash = BCrypt.hashpw(password, BCrypt.gensalt(12));\nuser.setPassword(hash);\n"
    },
    "note": "Encoding is not protection. Any reversible transformation, base64 included, can be turned back into the original value by whoever obtains the data.",
+   "covers": "A04",
    "ref": "CWE-311 · OWASP Top 10:2025 A04 Cryptographic Failures"
   },
   {
    "id": "cwe327",
+   "tab": "web",
    "code": "CWE-327",
    "severity": "HIGH",
    "title": "Broken or Risky Cryptographic Algorithm",
@@ -467,10 +609,12 @@ const GAME_DATA = {
     "code": "String hash = Argon2.hash(password, salt = random(16), cost = 65536);\n"
    },
    "note": "A broken or risky algorithm fails the property its purpose requires. MD5 and SHA-1 are fast to compute and collision-prone, so they cannot protect passwords.",
+   "covers": "A04",
    "ref": "CWE-327 · OWASP Top 10:2025 A04 Cryptographic Failures"
   },
   {
    "id": "cwe494",
+   "tab": "web",
    "code": "CWE-494",
    "severity": "HIGH",
    "title": "Download of Code Without Integrity Check",
@@ -499,10 +643,12 @@ const GAME_DATA = {
     "code": "byte[] plugin = httpGet(UPDATE_URL + \"/plugin.jar\");\nif (!Signature.verify(plugin, TRUSTED_PUBLIC_KEY)) throw new SecurityException(\"bad signature\");\nFiles.write(installPath, plugin);\n"
    },
    "note": "Code trusted because of where it came from has not been verified. Without an integrity check, a compromised or spoofed source delivers whatever it likes.",
+   "covers": "A08",
    "ref": "CWE-494 · OWASP Top 10:2025 A08 Software or Data Integrity Failures"
   },
   {
    "id": "cwe759",
+   "tab": "web",
    "code": "CWE-759",
    "severity": "HIGH",
    "title": "One-Way Hash Without a Salt",
@@ -531,10 +677,12 @@ const GAME_DATA = {
     "code": "byte[] salt = Crypto.randomBytes(16);\nString hash = PBKDF2.hash(password, salt, iterations = 210000);\nuser.setPassword(hash, salt);\n"
    },
    "note": "An unsalted hash is deterministic: the same password always produces the same digest. That enables precomputed tables and reveals shared passwords across users.",
+   "covers": "A04",
    "ref": "CWE-759 · OWASP Top 10:2025 A04 Cryptographic Failures"
   },
   {
    "id": "cwe798",
+   "tab": "web",
    "code": "CWE-798",
    "severity": "HIGH",
    "title": "Hard-Coded Credentials",
@@ -563,10 +711,12 @@ const GAME_DATA = {
     "code": "String pw = SecretStore.get(\"svc_app/db\");     // resolved at run time, never in source\nConnection c = DriverManager.getConnection(DB_URL, \"svc_app\", pw);\n"
    },
    "note": "A credential shipped with the code is in the hands of anyone who obtains the code. It cannot be rotated without a redeploy, and there is no lever to revoke it.",
+   "covers": "A05",
    "ref": "CWE-798 · OWASP Top 10:2025 A05 Injection-adjacent config risk"
   },
   {
    "id": "cwe807",
+   "tab": "web",
    "code": "CWE-807",
    "severity": "HIGH",
    "title": "Reliance on Untrusted Input in a Security Decision",
@@ -595,10 +745,12 @@ const GAME_DATA = {
     "code": "boolean isAdmin = Auth.roles(req.getSession()).contains(\"ADMIN\");   // server-side truth\nif (isAdmin) { showAdminPanel(); }\n"
    },
    "note": "The security decision is made from data the attacker controls. If the client supplies the input to an authorisation check, the client effectively makes the decision.",
+   "covers": "A01",
    "ref": "CWE-807 · OWASP Top 10:2025 A01 Broken Access Control"
   },
   {
    "id": "cwe862",
+   "tab": "web",
    "code": "CWE-862",
    "severity": "HIGH",
    "title": "Missing Authorization",
@@ -627,7 +779,348 @@ const GAME_DATA = {
     "code": "if (!Authz.allowed(session, \"admin.panel.view\")) { res.sendError(403); return; }\nshowAdminPanel();\n"
    },
    "note": "Authorisation enforced by obscurity is not enforced: a link that is hidden is not a request that is checked. Anything reachable by guessing a URL is unprotected.",
+   "covers": "A01",
    "ref": "CWE-862 · OWASP Top 10:2025 A01 Broken Access Control"
+  },
+  {
+   "id": "m1",
+   "tab": "mobile",
+   "code": "M1",
+   "covers": "M1",
+   "severity": "HIGH",
+   "title": "Improper Credential Usage",
+   "codeTitle": "Vulnerable — a long-lived backend key compiled into the app",
+   "body": "<p>The build embeds a <b>backend API key<\/b> as a source constant so the app can call the service directly. Anything shipped in the binary is public the day it ships — and this one key works for <b>every<\/b> user of the service.<\/p>\n",
+   "vulnerable": "// DecompiledApp.java — recovered from the APK in minutes\nprivate static final String API_KEY = \"AIza-demo-7F4K-SECRET\";\n// ...used as the sole credential on every backend call\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Obfuscate the string so the key is harder to find in the decompiled code.",
+     "why": "Obfuscation raises the effort by minutes. The key is still in the binary and still works for everyone."
+    },
+    {
+     "text": "Move the key from a source constant into a BuildConfig field.",
+     "why": "That changes where it is compiled from, not who can read it. The value still ships in the APK."
+    },
+    {
+     "text": "Broker backend access through your own server: the app authenticates the user, and the server holds the key.",
+     "correct": true,
+     "why": "A secret the client holds cannot be a secret. Moving it to a server the app calls with the user's own credentials means compromising one install no longer exposes the service."
+    }
+   ],
+   "defence": {
+    "name": "serverBrokeredAccess — the client authenticates, the server holds the secret",
+    "why": "Treat the device as hostile. Keys live server-side and are never shipped; the app presents the user's credential and the server makes the privileged call. Rotate anything a release has ever exposed.",
+    "code": "// app → your API, authenticated as the user\nPOST /api/pay { \"amount\": 42 }   Authorization: Bearer <user-session-jwt>\n// your API holds the provider key, server-side only\nprovider.charge(process.env.PAYWAVE_KEY, amount);\n"
+   },
+   "note": "Credential material compiled into an app is public. The APK is downloadable and decompilable and its strings are searchable — so a key in the client is a key you have given away, worldwide.",
+   "ref": "OWASP Mobile Top 10:2024 M1 Improper Credential Usage"
+  },
+  {
+   "id": "m2",
+   "tab": "mobile",
+   "code": "M2",
+   "covers": "M2",
+   "severity": "MEDIUM",
+   "title": "Inadequate Supply Chain Security",
+   "codeTitle": "Vulnerable — a bundled SDK with a known critical CVE",
+   "body": "<p>The SBOM shows an advertising SDK pulled in <b>transitively<\/b> — the app never calls it — and that SDK carries a known critical vulnerability. Its reach is your reach: the vulnerable code ships inside your app and runs with your permissions.<\/p>\n",
+   "vulnerable": "# sbom.txt — CycloneDX component list\nad-sdk       2.1.0   (CVE-2024-DEMO, critical)   transitive, unused\nanalytics    4.0.1   (no known advisories)        used\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Add a runtime check that refuses to start if the SDK version is not 2.1.0.",
+     "why": "That detects nothing — it pins the app to the vulnerable version and adds a crash path."
+    },
+    {
+     "text": "Inventory the dependencies, remove the SDK the app does not use, and pin and upgrade what remains.",
+     "correct": true,
+     "why": "A dependency you do not use is pure attack surface with no benefit. The fix is supply-chain hygiene: know the full tree, delete what is unused, and track what stays."
+    },
+    {
+     "text": "Vendor the SDK's source into the repository so builds are reproducible.",
+     "why": "Reproducible builds are good practice, but the vulnerable code is still compiled into the app."
+    }
+   ],
+   "defence": {
+    "name": "sbomInventory — know the tree, then shrink it",
+    "why": "Generate an SBOM per build, fail the pipeline on a known-exploited component, and exclude transitive dependencies the app does not need. Unused code you cannot see is still code you ship.",
+    "code": "# build gate — scanned from the generated SBOM\nsyft dir:. -o cyclonedx-json > sbom.json\ngrype sbom:sbom.json --fail-on high\n# and exclude the transitive dependency you never use\nimplementation(\"ad-sdk:2.1.0\") { exclude(group = \"com.example.transitive\") }\n"
+   },
+   "note": "Third-party code inherits your trust and your permissions. A supply-chain flaw is not something you wrote — which is exactly why it is missed: nobody reviews the tree they did not author.",
+   "ref": "OWASP Mobile Top 10:2024 M2 Inadequate Supply Chain Security"
+  },
+  {
+   "id": "m3",
+   "tab": "mobile",
+   "code": "M3",
+   "covers": "M3",
+   "severity": "HIGH",
+   "title": "Insecure Authentication and Authorization",
+   "codeTitle": "Vulnerable — the device decides the role, and the token never expires",
+   "body": "<p>The app's saved state holds both the <b>authorisation decision<\/b> and a token that is valid forever. The server accepts whatever the device asserts, so the client is the authority on what the user may do.<\/p>\n",
+   "vulnerable": "<!-- shared_prefs/auth.xml -->\n<boolean name=\"is_admin\" value=\"false\" />\n<string  name=\"role_source\" value=\"DEVICE\" />     <!-- the client decides -->\n<string  name=\"token_expiry\" value=\"NEVER\" />\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Encrypt auth.xml so the values cannot be edited on a rooted device.",
+     "why": "Encryption on a hostile device only raises the attacker's cost. The server would still be trusting a value it cannot verify."
+    },
+    {
+     "text": "Check is_admin again in each admin screen before showing it.",
+     "why": "More places trusting the same device-controlled value. The client is still the authority."
+    },
+    {
+     "text": "Enforce the role server-side on every request, and give sessions a real expiry.",
+     "correct": true,
+     "why": "Authorisation must be decided where the attacker cannot reach it. The server derives the role from its own store and rejects expired tokens — the client's copy becomes a display detail, not a permission."
+    }
+   ],
+   "defence": {
+    "name": "serverSideAuthz — the token is evidence, never the authority",
+    "why": "The server issues the token, verifies its signature, checks expiry, and looks the entitlement up in its own store on every request. A client that can edit its own saved state cannot edit the server's opinion of it.",
+    "code": "// server-side, on every privileged request\nClaims c = jwt.verify(bearer, serverKey);        // signature + issuer + audience\nif (c.exp < now()) return 401;                   // expiry is enforced, not decorative\nif (!store.rolesFor(c.sub).contains(\"admin\")) return 403;   // the server decides\n"
+   },
+   "note": "Authentication asks who you are; authorisation asks what you may do — and both answers must come from the server. Anything the device asserts about its own privileges is a request, not a fact.",
+   "ref": "OWASP Mobile Top 10:2024 M3 Insecure Authentication/Authorization"
+  },
+  {
+   "id": "m4",
+   "tab": "mobile",
+   "code": "M4",
+   "covers": "M4",
+   "severity": "HIGH",
+   "title": "Insufficient Input and Output Validation",
+   "codeTitle": "Vulnerable — deep-link input concatenated into a query",
+   "body": "<p>A content provider hands untrusted text straight into a <b>database query string<\/b>. The input crosses a trust boundary and is treated as code, which is injection with a mobile front door.<\/p>\n",
+   "vulnerable": "// ContentProvider.query() — input arrives from another app\nString id = uri.getQueryParameter(\"id\");\nCursor c = db.rawQuery(\"SELECT * FROM users WHERE id=\" + id, null);\n// ?id=1 OR 1=1   →   every row\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Restrict the deep link to a custom scheme only your app registers.",
+     "why": "That narrows one entry point; the provider is still reachable and the concatenation is still there."
+    },
+    {
+     "text": "Validate the input against its expected shape and pass it as a bound parameter, never as SQL text.",
+     "correct": true,
+     "why": "Parameterisation separates the query from the data so the input cannot become syntax. Validation then rejects anything that is not a valid id in the first place."
+    },
+    {
+     "text": "URL-encode the parameter before concatenating it into the query.",
+     "why": "Encoding is for transport. The database still parses the decoded value as SQL."
+    }
+   ],
+   "defence": {
+    "name": "boundParameters — the query is fixed, the data is a value",
+    "why": "Every boundary — deep links, intents, providers, IPC, the network — is untrusted input. Validate to an allow-list, then bind: the statement's structure is fixed at compile time and the input can only ever be a value.",
+    "code": "int id = Integer.parseInt(uri.getQueryParameter(\"id\"));   // allow-list: must be a number\nCursor c = db.rawQuery(\"SELECT * FROM users WHERE id = ?\",\n                       new String[]{ String.valueOf(id) });   // bound, not concatenated\n"
+   },
+   "note": "Injection is not a web-only bug; it is a trust-boundary bug. On mobile the boundary is a deep link, an intent or an exported provider, and the sink is whatever the input reaches next.",
+   "ref": "OWASP Mobile Top 10:2024 M4 Insufficient Input/Output Validation"
+  },
+  {
+   "id": "m5",
+   "tab": "mobile",
+   "code": "M5",
+   "covers": "M5",
+   "severity": "HIGH",
+   "title": "Insecure Communication",
+   "codeTitle": "Vulnerable — cleartext HTTP and a trust-all certificate check",
+   "body": "<p>The app posts the payment request over plain <b>HTTP<\/b> with the session token in the URL, and its TLS code accepts <b>any<\/b> certificate. Anyone on the same network reads the traffic and can rewrite it in flight.<\/p>\n",
+   "vulnerable": "# netlog.txt\nPOST http://api.paywave.demo/pay?token=ABC123      ← cleartext, token in the URL\nTrustManager: accept-all                            ← every certificate is trusted\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Obfuscate the query string so the token is not readable in transit.",
+     "why": "Encoding is not encryption, and the token still appears in server logs and device history."
+    },
+    {
+     "text": "Shorten the session token's lifetime so a stolen one expires sooner.",
+     "why": "That narrows the window, but the traffic is still readable and rewritable. The channel itself is the flaw."
+    },
+    {
+     "text": "Enforce HTTPS for every call, pin the server certificate, and keep tokens out of URLs.",
+     "correct": true,
+     "why": "TLS with a verified, pinned certificate authenticates the server and encrypts the channel; moving the token into a header keeps it out of logs, proxies and history. All three parts close the same flaw."
+    }
+   ],
+   "defence": {
+    "name": "tlsWithPinning — verify the server, encrypt the channel",
+    "why": "Use HTTPS only (no cleartext fallback), pin the expected certificate or public key so a rogue CA cannot impersonate the API, and carry credentials in headers with short-lived tokens.",
+    "code": "// no cleartext anywhere — network security config\n<base-config cleartextTrafficPermitted=\"false\" />\n// pin the key, not just any certificate the device trusts\nCertificatePinner p = new CertificatePinner.Builder()\n    .add(\"api.paywave.demo\", \"sha256/AAAAAAAA...\")   // your key\n    .build();\n"
+   },
+   "note": "On a phone, 'the network' includes public Wi-Fi the attacker owns. Transport security is not about hiding the payload — it is about knowing which server you are talking to and being unable to have that answer rewritten.",
+   "ref": "OWASP Mobile Top 10:2024 M5 Insecure Communication"
+  },
+  {
+   "id": "m6",
+   "tab": "mobile",
+   "code": "M6",
+   "covers": "M6",
+   "severity": "MEDIUM",
+   "title": "Inadequate Privacy Controls",
+   "codeTitle": "Vulnerable — over-collection shipped off-device with no consent",
+   "body": "<p>The analytics payload carries the <b>full contact list<\/b>, precise GPS and clipboard contents, and nothing asked the user. Data collected for a purpose it was never needed for is a breach waiting for its incident.<\/p>\n",
+   "vulnerable": "# analytics.log\nuploaded: full_contacts(482), precise_gps, clipboard\npurpose:    (not recorded)\nconsent:    none\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Encrypt the analytics payload before upload.",
+     "why": "The vendor decrypts it at the other end. Who holds the data and what it says are unchanged."
+    },
+    {
+     "text": "Collect only the fields the feature needs, with informed consent asked in context.",
+     "correct": true,
+     "why": "Data minimisation and purpose limitation are the fix: if the feature does not need it, do not collect it — and ask before the first collection, not in a policy nobody opens."
+    },
+    {
+     "text": "Add a link to the privacy policy in Settings.",
+     "why": "Disclosure is not permission, and it does not reduce what left the device."
+    }
+   ],
+   "defence": {
+    "name": "dataMinimisation — collect what the feature needs, ask first",
+    "why": "Decide the purpose, then collect the minimum for it; ask in context at the moment of collection; and keep sensitive categories — contacts, precise location, clipboard — out unless the feature genuinely requires them.",
+    "code": "// ask in context, collect the minimum, send the minimum\nif (!prefs.analyticsConsent) return;                 // no consent, no collection\nEvent e = Event.of(\"screen_view\")\n              .with(\"screen\", \"checkout\")            // what the feature needs\n              .region(geo.coarseRegion());           // region, not precise_gps\n"
+   },
+   "note": "Privacy harm is cumulative and invisible at the moment it is caused: one field over-collected per request becomes a profile. Consent must be specific, informed and given before collection — a policy document is not consent.",
+   "ref": "OWASP Mobile Top 10:2024 M6 Inadequate Privacy Controls"
+  },
+  {
+   "id": "m7",
+   "tab": "mobile",
+   "code": "M7",
+   "covers": "M7",
+   "severity": "MEDIUM",
+   "title": "Insufficient Binary Protections",
+   "codeTitle": "Vulnerable — a debuggable, unobfuscated release build",
+   "body": "<p>The shipped APK is <b>debuggable<\/b> and unobfuscated, so it can be attached to, decompiled and repackaged. Nothing here is a vulnerability on its own — the flaw is that every other flaw is made cheap to find and modify.<\/p>\n",
+   "vulnerable": "<!-- AndroidManifest.xml -->\n<application android:debuggable=\"true\" android:allowBackup=\"true\">\n<!-- release APK: decompiled cleanly, class and field names intact, no anti-tamper -->\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Detect rooted devices at startup and exit.",
+     "why": "Root detection is trivially bypassed and punishes legitimate users; the binary is still readable once the check is removed."
+    },
+    {
+     "text": "Give internal classes short meaningless names in the source.",
+     "why": "Cosmetic tidying, not obfuscation — and the build tooling can restore far more than names."
+    },
+    {
+     "text": "Ship release builds with debugging off, and raise the analysis cost with obfuscation and integrity checks.",
+     "correct": true,
+     "why": "Binary protections are cost, not proof — but a release build without debugging, without symbols and with a tamper check turns a five-minute analysis into a project."
+    }
+   ],
+   "defence": {
+    "name": "releaseHardening — no debug, obfuscate, verify integrity",
+    "why": "Build release variants with debuggable=false, enable shrinking and obfuscation, strip symbols, and add a signature or integrity check so a repackaged app refuses to run.",
+    "code": "// build.gradle (release)\nbuildTypes { release { minifyEnabled true; debuggable false\n                       proguardFiles getDefaultProguardFile(\"proguard-android-optimize.txt\") } }\n// and verify your own signature at startup\nif (!signatureOk(context)) { finish(); return; }\n"
+   },
+   "note": "Client-side protections raise the cost of analysis; they do not make it impossible. Treat them as one layer — the point is that an attacker holding your APK should have to work, not just download.",
+   "ref": "OWASP Mobile Top 10:2024 M7 Insufficient Binary Protections"
+  },
+  {
+   "id": "m8",
+   "tab": "mobile",
+   "code": "M8",
+   "covers": "M8",
+   "severity": "HIGH",
+   "title": "Security Misconfiguration",
+   "codeTitle": "Vulnerable — an admin screen exported to every app on the device",
+   "body": "<p>The manifest marks an internal admin activity <b>exported<\/b>, so any other app installed on the phone can launch it without authentication. Nothing was coded wrong — the default was simply left open.<\/p>\n",
+   "vulnerable": "<!-- AndroidManifest.xml -->\n<activity android:name=\".AdminActivity\"\n          android:exported=\"true\" />     <!-- reachable by ANY installed app -->\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Log every launch of AdminActivity.",
+     "why": "Logging records the abuse after it happens; it does not remove the entry point."
+    },
+    {
+     "text": "Default components to exported=false, and permission-guard anything that must be public.",
+     "correct": true,
+     "why": "In Android and iOS alike, exposure is opt-in. Only the components a caller outside your app genuinely needs should be exported, and those should require a signature-level permission."
+    },
+    {
+     "text": "Rename AdminActivity so its purpose is not obvious.",
+     "why": "Obscurity. The activity is still exported and still reachable by enumerating the manifest."
+    }
+   ],
+   "defence": {
+    "name": "closedByDefault — exported=false unless there is a reason",
+    "why": "Review the manifest as a security artefact: every exported component is an API your app publishes to the whole device. Export only what a legitimate external caller needs, guard it with a permission, and verify the entry point server-side too.",
+    "code": "<!-- the admin screen is internal: not exported at all -->\n<activity android:name=\".AdminActivity\" android:exported=\"false\" />\n<!-- if it must be exported, require a signature-level permission -->\n<activity android:name=\".PartnerEntry\" android:exported=\"true\"\n          android:permission=\"com.paywave.SIGNATURE_PARTNER\" />\n"
+   },
+   "note": "Misconfiguration is the class of flaws nobody wrote: a default left as-is. On mobile the manifest and the platform config are part of the attack surface, and an exported component is a door published to every other app on the phone.",
+   "ref": "OWASP Mobile Top 10:2024 M8 Security Misconfiguration"
+  },
+  {
+   "id": "m9",
+   "tab": "mobile",
+   "code": "M9",
+   "covers": "M9",
+   "severity": "HIGH",
+   "title": "Insecure Data Storage",
+   "codeTitle": "Vulnerable — a live session token in plaintext preferences",
+   "body": "<p>A valid session credential sits in <b>shared_prefs<\/b> in plaintext, and sensitive fields survive into the auto-backup. The app sandbox is not encryption: a rooted device, a backup or a debug bridge reads it straight out.<\/p>\n",
+   "vulnerable": "<!-- shared_prefs/session.xml -->\n<string name=\"auth_token\">eyJhbG...3XYZ<\/string>      ← plaintext, live session\n<!-- backup.json (auto-backup) -->\ncustomer_email=alice@example.com   reset_token=R3S3T-88\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Encrypt shared_prefs with a key stored in the app.",
+     "why": "The key ships with the app or is derived from one; on a rooted device you have handed over both the lock and the key."
+    },
+    {
+     "text": "Clear the token when the app exits.",
+     "why": "It is still on disk for the whole session, and an app that crashes or is killed never runs the cleanup."
+    },
+    {
+     "text": "Keep secrets out of preferences and backups: store them device-only in the platform keystore.",
+     "correct": true,
+     "why": "The fix is where the secret lives, not how it is written. The platform keystore binds the key to the device and, where available, to the user's authentication — and backups must exclude secret-bearing files."
+    }
+   ],
+   "defence": {
+    "name": "platformKeystore — secrets never rest in app-readable files",
+    "why": "Use the Android Keystore or the iOS Keychain for anything credential-shaped, mark secret files device-only and non-backupable, and treat everything else in shared_prefs as readable by an attacker who has the device.",
+    "code": "// key material in the platform keystore, not a file\nSecretKey k = KeyStoreUtil.getOrCreate(\"paywave.session\");\n// and exclude secrets from backup entirely\n<application android:allowBackup=\"false\" android:fullBackupContent=\"@xml/no_secrets\" />\n"
+   },
+   "note": "Storage is a trust decision. On a device the attacker may hold, 'we were not breached — the phone was' is not a defence: the data your app left there is the data that leaked.",
+   "ref": "OWASP Mobile Top 10:2024 M9 Insecure Data Storage"
+  },
+  {
+   "id": "m10",
+   "tab": "mobile",
+   "code": "M10",
+   "covers": "M10",
+   "severity": "HIGH",
+   "title": "Insufficient Cryptography",
+   "codeTitle": "Vulnerable — MD5, ECB mode and a hardcoded key",
+   "body": "<p>The app hashes passwords with <b>MD5<\/b>, encrypts with <b>AES/ECB<\/b> and keeps the encryption key as a literal string. Each of the three is independently broken, and together they give the illusion of protection.<\/p>\n",
+   "vulnerable": "// CryptoUtil.java\nString hash = MD5(password);                              // fast, unsalted, collision-broken\nCipher c    = Cipher.getInstance(\"AES/ECB/PKCS5Padding\");  // ECB leaks structure\nstatic final String KEY = \"1234567890123456\";              // the key is in the binary\n",
+   "question": "Which change removes the flaw?",
+   "options": [
+    {
+     "text": "Make the hardcoded key longer (32 characters instead of 16).",
+     "why": "Length does not fix custody. The key is still in the binary and still the same for every install."
+    },
+    {
+     "text": "Use the platform's vetted crypto with a per-install key held in the secure store, and a slow salted password hash.",
+     "correct": true,
+     "why": "Right primitives plus correct key handling: authenticated encryption (GCM), keys generated per install and kept in the keystore, and passwords hashed with bcrypt/scrypt/Argon2 rather than a general-purpose digest."
+    },
+    {
+     "text": "Switch MD5 to SHA-256 and keep ECB.",
+     "why": "SHA-256 is still a fast unsalted digest, and ECB still encrypts identical blocks identically — the pattern leak is untouched."
+    }
+   ],
+   "defence": {
+    "name": "vettedCrypto — the platform's primitives, keys in the keystore",
+    "why": "Do not design your own. Use authenticated encryption from the platform (AES-GCM), generate keys per install and hold them in the keystore, and hash passwords with a purpose-built slow, salted function.",
+    "code": "SecretKey k = KeyStoreUtil.getOrCreate(\"paywave.data\");        // per-install, keystore-held\nCipher c = Cipher.getInstance(\"AES/GCM/NoPadding\");            // authenticated, not ECB\nc.init(Cipher.ENCRYPT_MODE, k, new GCMParameterSpec(128, nonce));\nString pw = BCrypt.hashpw(password, BCrypt.gensalt(12));       // slow and salted\n"
+   },
+   "note": "Cryptography fails in two ways: the wrong primitive, or the right primitive with the key in the wrong place. A hardcoded key in a shipped binary fails both at once.",
+   "ref": "OWASP Mobile Top 10:2024 M10 Insufficient Cryptography"
   }
  ]
 };
@@ -667,7 +1160,6 @@ const GAME_DATA = {
       accuracy: accuracy,
       game: title
     };
-    // games that track their own totals push absolutes, so a lost push self-heals
     if (extra) {
       if (extra.stats) patch.stats = extra.stats;
       if (extra.solvedAll) patch.solvedAll = extra.solvedAll;
@@ -723,21 +1215,13 @@ const GAME_DATA = {
 
 </script>
 <script>
-/* lesson.js — flaw/defence lesson archetype.
- *
- * One belt = a flat list of lessons. Each lesson shows the flaw, the vulnerable
- * code, and asks the learner to choose the change that removes it; answering
- * reveals the defence (name + code + why). Content lives in the markdown pack —
- * nothing in here is course-specific.
- *
- * Scoring: 100 first try, 50 after a miss, 0 for a miss. A lesson is `solved`
- * when the correct option is picked, and stays solved on chip navigation.
- */
+
 
 const state = {
-  index: 0,
-  picked: {},     // lessonId -> index of the correct option that was chosen
-  tried: {},      // lessonId -> [option indices tried]
+  tab: null,       // active tab id
+  index: {},       // tabId -> lesson index within that tab
+  picked: {},      // lessonId -> index of the correct option that was chosen
+  tried: {},       // lessonId -> [option indices tried]
   score: 0,
   locked: false
 };
@@ -746,13 +1230,72 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 function lessons() { return GAME_DATA.lessons; }
-function currentLesson() { return lessons()[state.index]; }
-function totalLessons() { return lessons().length; }
-function solvedCount() { return Object.keys(state.picked).length; }
-function firstTryCount() {
-  return Object.keys(state.picked).filter(id => !(state.tried[id] || []).length).length;
+
+
+function tabs() {
+  const t = GAME_DATA.tabs;
+  if (Array.isArray(t) && t.length) return t;
+  return [{ id: "_all", label: GAME_DATA.title || "Lessons" }];
 }
+function tabDef(id) { return tabs().find(t => t.id === id) || tabs()[0]; }
+function tabLessons(tabId) { return lessons().filter(l => (l.tab || tabs()[0].id) === tabId); }
+function activeTab() { return state.tab || tabs()[0].id; }
+function myLessons() { return tabLessons(activeTab()); }
+function currentLesson() { return myLessons()[state.index[activeTab()] || 0]; }
+function totalLessons() { return myLessons().length; }
+function solvedIn(tabId) { return tabLessons(tabId).filter(l => state.picked[l.id] !== undefined).length; }
+function solvedCount() { return solvedIn(activeTab()); }
+function allSolved() { return lessons().every(l => state.picked[l.id] !== undefined); }
+function firstTryCount() { return Object.keys(state.picked).filter(id => !(state.tried[id] || []).length).length; }
 function attemptedCount() { return Object.keys(state.tried).length; }
+
+function renderTabs() {
+  const box = $("tabs");
+  if (!box) return;
+  box.innerHTML = "";
+  const multi = tabs().length > 1;
+  tabs().forEach(t => {
+    const n = tabLessons(t.id).length, done = solvedIn(t.id);
+    const b = document.createElement("button");
+    b.className = "tab" + (t.id === activeTab() ? " active" : "");
+    b.innerHTML = esc(t.label) + '<span class="tabCount">' + done + "/" + n + "</span>";
+    b.onclick = () => switchTab(t.id);
+    box.appendChild(b);
+    if (!multi) b.classList.add("solo");
+  });
+  box.style.display = multi ? "" : "none";
+}
+
+
+function renderCoverage() {
+  const card = $("coverageCard");
+  if (!card) return;
+  const def = tabDef(activeTab());
+  const list = def.coverage || [];
+  if (!list.length) { card.style.display = "none"; return; }
+  card.style.display = "";
+  $("coverageHead").textContent = def.coverage_label || "Coverage";
+  const covered = {};
+  myLessons().forEach(l => { if (l.covers && state.picked[l.id] !== undefined) covered[l.covers] = true; });
+  const taught = {};
+  myLessons().forEach(l => { if (l.covers) taught[l.covers] = true; });
+  const grid = $("coverageGrid");
+  grid.innerHTML = "";
+  list.forEach(pair => {
+    const code = pair[0], name = pair[1];
+    const d = document.createElement("div");
+    const isCovered = !!covered[code], isTaught = !!taught[code];
+    d.className = "covItem " + (isCovered ? "lit" : (isTaught ? "open" : "gap"));
+    d.title = name + (isCovered ? " — covered" : (isTaught ? " — not yet solved" : " — NOT covered by this belt"));
+    d.innerHTML = '<b>' + esc(code) + '</b><span>' + esc(name) + "</span>" +
+      (isCovered ? '<i class="covMark">✓</i>' : (isTaught ? "" : '<i class="covMark">–</i>'));
+    grid.appendChild(d);
+  });
+  const gap = list.filter(p => !taught[p[0]]).length;
+  $("coverageNote").textContent = gap
+    ? gap + " categor" + (gap === 1 ? "y is" : "ies are") + " not covered by this belt — a gap worth knowing, not hiding."
+    : "Every category in this framework is covered by a lesson here.";
+}
 
 function renderHeader() {
   const done = solvedCount(), total = totalLessons();
@@ -764,11 +1307,11 @@ function renderHeader() {
 function renderChips() {
   const box = $("chips");
   box.innerHTML = "";
-  lessons().forEach((l, i) => {
+  myLessons().forEach((l, i) => {
     const c = document.createElement("div");
     c.className = "chip";
     if (state.picked[l.id] !== undefined) c.classList.add("done");
-    if (i === state.index) c.classList.add("current");
+    if (i === (state.index[activeTab()] || 0)) c.classList.add("current");
     c.textContent = l.code || l.id;
     c.title = l.title;
     c.onclick = () => gotoLesson(i);
@@ -778,7 +1321,8 @@ function renderChips() {
 
 function renderLesson() {
   const l = currentLesson();
-  $("lessonCount").textContent = "Lesson " + (state.index + 1) + " of " + totalLessons();
+  if (!l) return;
+  $("lessonCount").textContent = "Lesson " + ((state.index[activeTab()] || 0) + 1) + " of " + totalLessons();
   $("codeBadge").textContent = l.code || "";
   $("codeBadge").className = "roundBadge threat-" + (l.severity || "MEDIUM");
   $("lessonTitle").textContent = l.title;
@@ -808,8 +1352,6 @@ function renderLesson() {
   $("nextBtn").style.display = "none";
   $("defenceCard").style.display = "none";
   state.locked = false;
-
-  // restore a lesson already solved (chip navigation revisits it)
   if (state.picked[l.id] !== undefined) {
     const tried = state.tried[l.id] || [];
     (l.options || []).forEach((o, bi) => {
@@ -827,6 +1369,8 @@ function renderLesson() {
   }
   renderChips();
   renderHeader();
+  renderTabs();
+  renderCoverage();
 }
 
 function revealDefence(l) {
@@ -837,8 +1381,14 @@ function revealDefence(l) {
   $("defenceCard").style.display = "block";
 }
 
+function switchTab(id) {
+  state.tab = id;
+  if (state.index[id] === undefined) state.index[id] = 0;
+  renderLesson();
+}
+
 function gotoLesson(i) {
-  state.index = i;
+  state.index[activeTab()] = i;
   renderLesson();
 }
 
@@ -882,27 +1432,30 @@ function pick(i) {
   }
   renderHeader();
   renderChips();
+  renderTabs();
+  renderCoverage();
 }
 
 function nextLesson() {
-  if (state.index + 1 < totalLessons()) {
-    state.index++;
-    renderLesson();
-  } else {
-    showFinish();
-  }
+  const i = state.index[activeTab()] || 0;
+  if (i + 1 < totalLessons()) { state.index[activeTab()] = i + 1; renderLesson(); }
+  else showFinish();
 }
 
 function showFinish() {
   const total = totalLessons(), first = firstTryCount();
+  const solvedTotal = lessons().filter(l => state.picked[l.id] !== undefined).length;
+  const remaining = lessons().length - solvedTotal;
   $("finishTitle").textContent = "Green Belt complete";
-  $("finishBody").innerHTML = "You solved <b>" + total + "</b> lessons for <b>" + state.score +
-    "</b> points; <b>" + first + "/" + total + "</b> on the first try.";
+  $("finishBody").innerHTML = "You solved <b>" + total + "</b> lessons in this belt for <b>" +
+    state.score + "</b> points; <b>" + first + "/" + lessons().length + "</b> on the first try." +
+    (remaining ? " <b>" + remaining + "</b> lesson(s) still open in the other belt — the tab is waiting." : "");
   $("overlay").classList.add("show");
 }
 
 function restartGame() {
-  state.index = 0;
+  tabs().forEach(t => state.index[t.id] = 0);
+  state.tab = tabs()[0].id;
   state.picked = {};
   state.tried = {};
   state.score = 0;
@@ -911,34 +1464,29 @@ function restartGame() {
   renderLesson();
 }
 
-/* sync: push on every answer (points + lesson id + accuracy = first-try rate)
-   Cumulative, not delta-only: the absolute device totals and the full solved map
-   go with every push, so a push lost to a race or a slow network is repaired by
-   the next one. See the serialization note in sync.js. */
+
 function sync_push(points, solvedId) {
   if (!(window.PACE && window.PACE.gameSync)) return;
   const attempted = Math.max(1, attemptedCount());
   const accuracy = firstTryCount() / attempted;
   const solvedAll = {};
   Object.keys(state.picked || {}).forEach(function (k) { solvedAll[k] = true; });
-  // A lesson counts as MISSED when the first pick was wrong (or it was abandoned) — this is
-  // the instructor's debrief signal, so it is distinct from "not solved yet".
   const missedAll = {};
   Object.keys(state.tried || {}).forEach(function (k) {
     if ((state.tried[k] || [])[0] !== state.picked[k]) missedAll[k] = true;
   });
   try {
-    // solvedId is null on a miss: the board must not record a lesson the player did not solve.
-    // solvedAll carries every lesson actually solved, so the board self-heals either way.
     window.PACE.gameSync.push(points, solvedId, accuracy, {
       stats: { score: state.score, correct: firstTryCount(), attempts: attemptedCount() },
       solvedAll: solvedAll,
       missedAll: missedAll
     });
-  } catch (e) { /* sync must never break play */ }
+  } catch (e) {  }
 }
 
 $("nextBtn").onclick = nextLesson;
+state.tab = tabs()[0].id;
+tabs().forEach(t => state.index[t.id] = 0);
 renderLesson();
 
 </script>
